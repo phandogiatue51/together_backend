@@ -73,7 +73,7 @@ namespace Together.Services
             };
 
             await _accountRepo.AddAsync(account);
-            return (true, "Account created successfully!", account.Id ?? 0);
+            return (true, "Account created successfully!", account.Id);
         }
 
         public async Task<(bool Success, string Message)> UpdateAccount(int id, UpdateUserDto dto)
@@ -144,7 +144,7 @@ namespace Together.Services
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return (true, "Login successful", tokenString, user.Role.Value);
+            return (true, "Login successful", tokenString, user.Role);
         }
 
         private List<Claim> GenerateUserClaims(Account user)
@@ -153,13 +153,32 @@ namespace Together.Services
             {
                 new Claim("AccountId", user.Id.ToString() ?? "0"),
                 new Claim("Email", user.Email ?? ""),
-                new Claim("Role", user.Role?.ToString() ?? "User"),
+                new Claim("Role", user.Role.ToString() ?? "User"),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString() ?? "0"),
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Role, user.Role?.ToString() ?? "User"),
+                new Claim(ClaimTypes.Role, user.Role.ToString() ?? "User"),
             };
             return claims;
         }
 
+        public async Task<(bool Success, string Message)> ChangePassword(int accountId, ChangePasswordDto dto)
+        {
+            var account = await _accountRepo.GetByIdAsync(accountId);
+            if (account == null)
+            {
+                return (false, "Account not found!");
+            }
+            if (!_passwordHelper.VerifyPassword(dto.CurrentPassword, account.PasswordHash))
+            {
+                return (false, "Current password is incorrect.");
+            }
+            if (dto.NewPassword != dto.ConfirmNewPassword)
+            {
+                return (false, "New password and confirmation do not match.");
+            }
+            account.PasswordHash = _passwordHelper.HashPassword(dto.NewPassword);
+            await _accountRepo.UpdateAsync(account);
+            return (true, "Password changed successfully!");
+        }
     }
 }

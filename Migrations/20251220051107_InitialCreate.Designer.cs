@@ -277,10 +277,10 @@ namespace Together.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("text");
 
-                    b.Property<string>("ContactEmail")
+                    b.Property<string>("Email")
                         .HasColumnType("text");
 
-                    b.Property<string>("ContactPhone")
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")

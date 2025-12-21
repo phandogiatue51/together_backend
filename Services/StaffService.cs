@@ -10,11 +10,11 @@ namespace Together.Services
     {
         private readonly StaffRepo _staffRepo;
         private readonly AccountService _accountService;
-        private readonly OrganRepo _organRepo;
+        private readonly OrganizationRepo _organRepo;
         private readonly AccountRepo _accountRepo;
         private readonly PasswordHelper _passwordHelper;
 
-        public StaffService(StaffRepo staffRepo, AccountService accountService, OrganRepo organRepo,
+        public StaffService(StaffRepo staffRepo, AccountService accountService, OrganizationRepo organRepo,
             AccountRepo accountRepo, PasswordHelper passwordHelper)
         {
             _staffRepo = staffRepo;
@@ -33,10 +33,10 @@ namespace Together.Services
                 OrganizationId = m.OrganizationId,
                 OrganizationName = m.Organization?.Name,
                 AccountId = m.AccountId,
-                Name = m.StaffAccount.Name,
-                Email = m.StaffAccount.Email,
+                Name = m.Account.Name,
+                Email = m.Account.Email,
                 StaffRole = m.Role.ToString(),
-                JoinedDate = m.JoinedDate
+                JoinedDate = m.JoinedAt
             }).ToList();
         }
 
@@ -49,10 +49,10 @@ namespace Together.Services
                 OrganizationId = staff.OrganizationId,
                 OrganizationName = staff.Organization?.Name,
                 AccountId = staff.AccountId,
-                Name = staff.StaffAccount.Name,
-                Email = staff.StaffAccount.Email,
+                Name = staff.Account.Name,
+                Email = staff.Account.Email,
                 StaffRole = staff.Role.ToString(),
-                JoinedDate = staff.JoinedDate
+                JoinedDate = staff.JoinedAt
             };
         }
 
@@ -64,10 +64,10 @@ namespace Together.Services
                 Id = m.Id,
                 OrganizationId = m.OrganizationId,
                 AccountId = m.AccountId,
-                Name = m.StaffAccount.Name,
-                Email = m.StaffAccount.Email,
+                Name = m.Account.Name,
+                Email = m.Account.Email,
                 StaffRole = m.Role.ToString(),
-                JoinedDate = m.JoinedDate
+                JoinedDate = m.JoinedAt
             }).ToList();
         }
 
@@ -93,8 +93,6 @@ namespace Together.Services
                     OrganizationId = dto.OrganizationId,
                     AccountId = accountId,
                     Role = dto.Role,
-                    JoinedDate = DateTime.UtcNow,
-                    IsActive = true
                 };
 
                 await _staffRepo.AddAsync(staff);
@@ -119,31 +117,20 @@ namespace Together.Services
             if (dto.IsActive.HasValue)
                 staff.IsActive = dto.IsActive.Value;
 
-            if (staff.StaffAccount != null)
+            if (staff.Account != null)
             {
                 if (!string.IsNullOrEmpty(dto.Name))
-                    staff.StaffAccount.Name = dto.Name;
+                    staff.Account.Name = dto.Name;
 
                 if (!string.IsNullOrEmpty(dto.Email))
                 {
                     var emailExists = await _accountRepo.ExistsAsync(a =>
-                        a.Email == dto.Email && a.Id != staff.StaffAccount.Id);
+                        a.Email == dto.Email && a.Id != staff.Account.Id);
 
                     if (emailExists)
                         return (false, "Email already in use by another account");
 
-                    staff.StaffAccount.Email = dto.Email;
-                }
-
-                if (!string.IsNullOrEmpty(dto.NewPassword) || !string.IsNullOrEmpty(dto.ConfirmPassword))
-                {
-                    if (string.IsNullOrEmpty(dto.NewPassword) || string.IsNullOrEmpty(dto.ConfirmPassword))
-                        return (false, "Both NewPassword and ConfirmPassword are required");
-
-                    if (dto.NewPassword != dto.ConfirmPassword)
-                        return (false, "New password and confirm password do not match");
-
-                    staff.StaffAccount.PasswordHash = _passwordHelper.HashPassword(dto.NewPassword);
+                    staff.Account.Email = dto.Email;
                 }
             }
 

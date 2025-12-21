@@ -11,6 +11,7 @@ namespace Together.Repositories
             return await _dbSet
                 .Include(s => s.Organization)
                 .Include(s => s.Author)
+                .OrderBy(s => s.Id)
                 .ToListAsync();
         }
 

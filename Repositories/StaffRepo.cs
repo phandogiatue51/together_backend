@@ -10,7 +10,7 @@ namespace Together.Repositories
         public async Task<List<Staff>> GettAll()
         {
             return await _dbSet
-                .Include(s => s.StaffAccount) 
+                .Include(s => s.Account) 
                 .Include(s => s.Organization) 
                 .ToListAsync();
         }
@@ -18,7 +18,7 @@ namespace Together.Repositories
         public async Task<Staff?> GetByIdAsync(int id)
         {
             return await _dbSet
-                .Include(s => s.StaffAccount)
+                .Include(s => s.Account)
                 .Include(s => s.Organization)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
@@ -27,7 +27,7 @@ namespace Together.Repositories
         {
             return await _dbSet
                 .Where(s => s.OrganizationId == organId)
-                .Include(s => s.StaffAccount)  
+                .Include(s => s.Account)  
                 .Include(s => s.Organization)  
                 .ToListAsync();
         }

@@ -82,17 +82,19 @@ builder.Services.Configure<CloudinarySettings>(
 
 builder.Services.AddScoped<AccountRepo>();
 builder.Services.AddScoped<BlogRepo>();
-builder.Services.AddScoped<FormRepo>();
-builder.Services.AddScoped<OrganRepo>();
+builder.Services.AddScoped<OrganizationRepo>();
 builder.Services.AddScoped<ProjectRepo>();
 builder.Services.AddScoped<StaffRepo>();
+builder.Services.AddScoped<CategoryRepo>();
+builder.Services.AddScoped<CertificateRepo>();
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<BlogService>();
-builder.Services.AddScoped<FormService>();
-builder.Services.AddScoped<OrganService>();
+builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<StaffService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<CertificateService>();
 
 builder.Services.AddScoped<PasswordHelper>();
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Together.Models;
@@ -11,9 +12,11 @@ using Together.Models;
 namespace Together.Migrations
 {
     [DbContext(typeof(TogetherDbContext))]
-    partial class TogetherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221042631_MinorFix2")]
+    partial class MinorFix2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,9 +215,6 @@ namespace Together.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("CertificateName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -223,6 +223,9 @@ namespace Together.Migrations
                     b.Property<string>("CertificateNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<int>("CertificateTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -260,11 +263,59 @@ namespace Together.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CertificateTypeId");
 
                     b.HasIndex("VerifiedByAdminId");
 
                     b.ToTable("Certificates");
+                });
+
+            modelBuilder.Entity("Together.Models.CertificateType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IssuingAuthority")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CertificateTypes");
                 });
 
             modelBuilder.Entity("Together.Models.Organization", b =>
@@ -408,6 +459,37 @@ namespace Together.Migrations
                     b.ToTable("ProjectCategories");
                 });
 
+            modelBuilder.Entity("Together.Models.ProjectRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdditionalNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("CertificateTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Level")
+                        .HasMaxLength(50)
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateTypeId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectRequirements");
+                });
+
             modelBuilder.Entity("Together.Models.Staff", b =>
                 {
                     b.Property<int>("Id")
@@ -524,9 +606,9 @@ namespace Together.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Together.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
+                    b.HasOne("Together.Models.CertificateType", "CertificateType")
+                        .WithMany("Certificates")
+                        .HasForeignKey("CertificateTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -536,9 +618,20 @@ namespace Together.Migrations
 
                     b.Navigation("Account");
 
-                    b.Navigation("Category");
+                    b.Navigation("CertificateType");
 
                     b.Navigation("VerifiedByAdmin");
+                });
+
+            modelBuilder.Entity("Together.Models.CertificateType", b =>
+                {
+                    b.HasOne("Together.Models.Category", "Category")
+                        .WithMany("CertificateTypes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Together.Models.Project", b =>
@@ -557,7 +650,7 @@ namespace Together.Migrations
                     b.HasOne("Together.Models.Category", "Category")
                         .WithMany("ProjectCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Together.Models.Project", "Project")
@@ -567,6 +660,25 @@ namespace Together.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Together.Models.ProjectRequirement", b =>
+                {
+                    b.HasOne("Together.Models.CertificateType", "CertificateType")
+                        .WithMany("ProjectRequirements")
+                        .HasForeignKey("CertificateTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Together.Models.Project", "Project")
+                        .WithMany("Requirements")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CertificateType");
 
                     b.Navigation("Project");
                 });
@@ -626,7 +738,16 @@ namespace Together.Migrations
 
             modelBuilder.Entity("Together.Models.Category", b =>
                 {
+                    b.Navigation("CertificateTypes");
+
                     b.Navigation("ProjectCategories");
+                });
+
+            modelBuilder.Entity("Together.Models.CertificateType", b =>
+                {
+                    b.Navigation("Certificates");
+
+                    b.Navigation("ProjectRequirements");
                 });
 
             modelBuilder.Entity("Together.Models.Organization", b =>
@@ -641,6 +762,8 @@ namespace Together.Migrations
             modelBuilder.Entity("Together.Models.Project", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Requirements");
 
                     b.Navigation("VolunteerApplications");
                 });

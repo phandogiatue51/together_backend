@@ -1,0 +1,62 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Together.Models
+{
+    public enum CertificateStatus
+    {
+        Pending,
+        Verified,
+        Rejected,
+        Expired
+    }
+
+    public class Certificate
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [Required]
+        public int AccountId { get; set; }
+
+        [Required]
+        [MaxLength(200)]
+        public string CertificateName { get; set; } = string.Empty;
+
+        [Required]
+        public int CategoryId { get; set; }
+
+        [MaxLength(100)]
+        public string? IssuingOrganization { get; set; }
+
+        [MaxLength(50)]
+        public string? CertificateNumber { get; set; }
+
+        public DateOnly? IssueDate { get; set; }
+        public DateOnly? ExpiryDate { get; set; }
+
+        [MaxLength(500)]
+        public string? Description { get; set; }
+
+        [Required]
+        public string ImageUrl { get; set; } = string.Empty; 
+
+        [Required]
+        public CertificateStatus Status { get; set; } = CertificateStatus.Pending;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? VerifiedAt { get; set; }
+
+        public int? VerifiedByAdminId { get; set; }
+
+        [ForeignKey("AccountId")]
+        public virtual Account Account { get; set; } = null!;
+
+        [ForeignKey("VerifiedByAdminId")]
+        public virtual Account? VerifiedByAdmin { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public virtual Category Category { get; set; } = null!;
+    }
+}

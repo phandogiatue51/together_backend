@@ -3,34 +3,22 @@ using Together.Models;
 
 namespace Together.Repositories
 {
-    public class OrganRepo : BaseRepo<Organization>
+    public class OrganizationRepo : BaseRepo<Organization>
     {
-        public OrganRepo(TogetherDbContext context) : base(context) { }
+        public OrganizationRepo(TogetherDbContext context) : base(context) { }
 
         public async Task<List<Organization>> GettAll()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet
+                .OrderBy(s => s.Id)
+                .ToListAsync();
         }
 
         public async Task<Organization?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
-        }
-
-        public async Task<Organization?> GetByIdWithStaffAsync(int id)
-        {
             return await _dbSet
-                .Include(o => o.Staffs)
                 .Include(o => o.Projects)
                 .FirstOrDefaultAsync(o => o.Id == id);
-        }
-
-        public async Task<List<Organization>> GetActiveOrganizationsAsync()
-        {
-            return await _dbSet
-                .Where(o => o.IsActive)
-                .OrderBy(o => o.Name)
-                .ToListAsync();
         }
 
         public async Task<List<Organization>> SearchByNameAsync(string name)

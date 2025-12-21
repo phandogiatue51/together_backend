@@ -12,9 +12,9 @@ namespace Together.DTOs.Organ
         [Required]
         public string? Website { get; set; }
         [Required]
-        public string? ContactEmail { get; set; }
+        public string? Email { get; set; }
         [Required]
-        public string? ContactPhone { get; set; }
+        public string? PhoneNumber { get; set; }
         [Required]
         public string? Address { get; set; }
     }

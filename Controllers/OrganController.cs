@@ -10,9 +10,9 @@ namespace Together.Controllers
     [ApiController]
     public class OrganController : ControllerBase
     {
-        private readonly OrganService _organService;
+        private readonly OrganizationService _organService;
 
-        public OrganController(OrganService organService)
+        public OrganController(OrganizationService organService)
         {
             _organService = organService;
         }

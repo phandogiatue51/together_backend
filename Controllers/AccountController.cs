@@ -81,5 +81,16 @@ namespace Together.Controllers
             }
             return Ok(result.Message);
         }
+
+        [HttpPut("change-password/{id}")]
+        public async Task<IActionResult> ChangePassword(int id, ChangePasswordDto dto)
+        {
+            var result = await _accountService.ChangePassword(id, dto);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+        }
     }
 }

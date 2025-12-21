@@ -5,8 +5,10 @@ namespace Together.Models
 {
     public enum StaffRole
     {
-        Member,
-        Manager
+        Manager,       
+        Coordinator,    
+        Reviewer,       
+        VolunteerManager 
     }
 
     public class Staff
@@ -15,18 +17,24 @@ namespace Together.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Required]
         public int OrganizationId { get; set; }
+
+        [Required]
         public int AccountId { get; set; }
 
-        public StaffRole Role { get; set; } = StaffRole.Member;
+        [Required]
+        public StaffRole Role { get; set; } = StaffRole.Coordinator;
 
-        public DateTime JoinedDate { get; set; } = DateTime.UtcNow;
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? LeftAt { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         [ForeignKey("OrganizationId")]
-        public virtual Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; } = null!;
 
         [ForeignKey("AccountId")]
-        public virtual Account StaffAccount { get; set; }
+        public virtual Account Account { get; set; } = null!;
     }
 }

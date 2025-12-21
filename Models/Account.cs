@@ -5,9 +5,10 @@ namespace Together.Models
 {
     public enum AccountRole
     {
-        User,
-        Admin,
-        Staff
+        User,        
+        Volunteer,  
+        Staff,       
+        Admin       
     }
 
     public enum AccountStatus
@@ -15,18 +16,49 @@ namespace Together.Models
         Active,
         Inactive,
         Banned,
+        PendingVerification  
     }
 
     public class Account
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int? Id { get; set; }
-        public string? Name { get; set; }
-        public string? Email { get; set; }
-        public string? PasswordHash { get; set; }
-        public AccountRole? Role { get; set; }
-        public AccountStatus? Status { get; set; } = AccountStatus.Active;
+        public int Id { get; set; }
 
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string PasswordHash { get; set; } = string.Empty;
+
+        public string? PhoneNumber { get; set; }
+
+        [MaxLength(500)]
+        public string? Bio { get; set; } 
+
+        public string? ProfileImageUrl { get; set; }
+
+        public bool? IsFemale { get; set; }
+
+        public DateOnly? DateOfBirth { get; set; }
+
+        [Required]
+        public AccountRole Role { get; set; } = AccountRole.User;
+
+        [Required]
+        public AccountStatus Status { get; set; } = AccountStatus.PendingVerification;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+
+        public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
+        public virtual ICollection<VolunteerApplication> VolunteerApplications { get; set; } = new List<VolunteerApplication>();
+        public virtual ICollection<Staff> OrganizationStaff { get; set; } = new List<Staff>();
     }
 }

@@ -5,11 +5,11 @@ using Together.Repositories;
 
 namespace Together.Services
 {
-    public class OrganService
+    public class OrganizationService
     {
-        private readonly OrganRepo _organRepo;
+        private readonly OrganizationRepo _organRepo;
         private readonly CloudinaryService _imageStorageService;
-        public OrganService(OrganRepo organRepo, CloudinaryService cloudinaryImageService)
+        public OrganizationService(OrganizationRepo organRepo, CloudinaryService cloudinaryImageService)
         {
             _organRepo = organRepo;
             _imageStorageService = cloudinaryImageService;
@@ -26,8 +26,8 @@ namespace Together.Services
                 Description = m.Description,
                 LogoUrl = m.LogoUrl,
                 Website = m.Website,
-                ContactEmail = m.ContactEmail,
-                ContactPhone = m.ContactPhone,
+                Email = m.Email,
+                PhoneNumber = m.PhoneNumber,
                 Address = m.Address
             }).ToList();
         }
@@ -46,8 +46,8 @@ namespace Together.Services
                 Description = organs.Description,
                 LogoUrl = organs.LogoUrl,
                 Website = organs.Website,
-                ContactEmail = organs.ContactEmail,
-                ContactPhone = organs.ContactPhone,
+                Email = organs.Email,
+                PhoneNumber = organs.PhoneNumber,
                 Address = organs.Address
             };
         }
@@ -61,8 +61,8 @@ namespace Together.Services
                 Name = dto.Name,
                 Description = dto.Description,
                 Website = dto.Website,
-                ContactEmail = dto.ContactEmail,
-                ContactPhone = dto.ContactPhone,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
                 Address = dto.Address
             };
 
@@ -85,8 +85,8 @@ namespace Together.Services
             existing.Name = dto.Name;
             existing.Description = dto.Description;
             existing.Website = dto.Website;
-            existing.ContactEmail = dto.ContactEmail;
-            existing.ContactPhone = dto.ContactPhone;
+            existing.Email = dto.Email;
+            existing.PhoneNumber = dto.PhoneNumber;
             existing.Address = dto.Address;
 
             if (newImageFile != null && newImageFile.Length > 0)
@@ -106,6 +106,12 @@ namespace Together.Services
             {
                 return (false, "Organization not found!");
             }
+
+            if (!string.IsNullOrEmpty(organ.LogoUrl))
+            {
+                await _imageStorageService.DeleteImageAsync(organ.LogoUrl);
+            }
+
             await _organRepo.DeleteAsync(organ);
             return (true, "Organization deleted successfully!");
         }
