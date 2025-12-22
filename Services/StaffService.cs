@@ -27,48 +27,19 @@ namespace Together.Services
         public async Task<List<ViewStaffDto>> GetAllStaff()
         {
             var staffs = await _staffRepo.GettAll();
-            return staffs.Select(m => new ViewStaffDto
-            {
-                Id = m.Id,
-                OrganizationId = m.OrganizationId,
-                OrganizationName = m.Organization?.Name,
-                AccountId = m.AccountId,
-                Name = m.Account.Name,
-                Email = m.Account.Email,
-                StaffRole = m.Role.ToString(),
-                JoinedDate = m.JoinedAt
-            }).ToList();
+            return staffs.Select(MapToViewStaffDto).ToList();
         }
 
         public async Task<ViewStaffDto?> GetStaffById(int id)
         {
             var staff = await _staffRepo.GetByIdAsync(id);
-            return new ViewStaffDto
-            {
-                Id = staff.Id,
-                OrganizationId = staff.OrganizationId,
-                OrganizationName = staff.Organization?.Name,
-                AccountId = staff.AccountId,
-                Name = staff.Account.Name,
-                Email = staff.Account.Email,
-                StaffRole = staff.Role.ToString(),
-                JoinedDate = staff.JoinedAt
-            };
+            return MapToViewStaffDto(staff);
         }
 
         public async Task<List<ViewStaffDto>> GetStaffByOrganId(int organId)
         {
             var staffs = await _staffRepo.GetStaffByOrganId(organId);
-            return staffs.Select(m => new ViewStaffDto
-            {
-                Id = m.Id,
-                OrganizationId = m.OrganizationId,
-                AccountId = m.AccountId,
-                Name = m.Account.Name,
-                Email = m.Account.Email,
-                StaffRole = m.Role.ToString(),
-                JoinedDate = m.JoinedAt
-            }).ToList();
+            return staffs.Select(MapToViewStaffDto).ToList();
         }
 
         public async Task<(bool Success, string Message, int? StaffId)> CreateStaff(CreateStaffDto dto)
@@ -115,7 +86,11 @@ namespace Together.Services
                 staff.Role = dto.Role.Value;
 
             if (dto.IsActive.HasValue)
+            {
                 staff.IsActive = dto.IsActive.Value;
+                if (!dto.IsActive.Value)
+                    staff.LeftAt = DateTime.UtcNow; 
+            }
 
             if (staff.Account != null)
             {
@@ -124,14 +99,28 @@ namespace Together.Services
 
                 if (!string.IsNullOrEmpty(dto.Email))
                 {
-                    var emailExists = await _accountRepo.ExistsAsync(a =>
-                        a.Email == dto.Email && a.Id != staff.Account.Id);
+                    if (staff.Account.Email != dto.Email)
+                    {
+                        var emailExists = await _accountRepo.ExistsAsync(a =>
+                            a.Email == dto.Email && a.Id != staff.Account.Id);
 
-                    if (emailExists)
-                        return (false, "Email already in use by another account");
+                        if (emailExists)
+                            return (false, "Email already in use by another account");
 
-                    staff.Account.Email = dto.Email;
+                        staff.Account.Email = dto.Email;
+                    }
                 }
+
+                if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                    staff.Account.PhoneNumber = dto.PhoneNumber;
+
+                if (dto.DateOfBirth.HasValue)
+                    staff.Account.DateOfBirth = dto.DateOfBirth.Value;
+
+                if (dto.IsFemale.HasValue)
+                    staff.Account.IsFemale = dto.IsFemale.Value;
+
+                staff.Account.UpdatedAt = DateTime.UtcNow;
             }
 
             await _staffRepo.UpdateAsync(staff);
@@ -146,6 +135,21 @@ namespace Together.Services
 
             await _staffRepo.DeleteAsync(staff);
             return (true, "Staff deleted successfully");
+        }
+
+        private ViewStaffDto MapToViewStaffDto(Staff staff)
+        {
+            return new ViewStaffDto
+            {
+                Id = staff.Id,
+                OrganizationId = staff.OrganizationId,
+                OrganizationName = staff.Organization?.Name, 
+                AccountId = staff.AccountId,
+                Name = staff.Account?.Name ?? string.Empty, 
+                Email = staff.Account?.Email ?? string.Empty,
+                StaffRole = staff.Role.ToString(), 
+                JoinedDate = staff.JoinedAt 
+            };
         }
     }
 }

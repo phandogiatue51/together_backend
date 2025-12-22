@@ -68,7 +68,6 @@ namespace Together.Controllers
                 return BadRequest(result.Message);
             }
             return Ok(result.Message);
-
         }
 
         [HttpDelete("{id}")]

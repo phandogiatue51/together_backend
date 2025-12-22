@@ -7,22 +7,24 @@ namespace Together.Repositories
     {
         public ProjectRepo(TogetherDbContext context) : base(context) { }
 
-        public async Task<List<Project>> GettAll()
+        private IQueryable<Project> WithIncludes()
         {
-            return await _dbSet
+            return _dbSet
                 .Include(p => p.Organization)
                 .Include(p => p.Categories)
-                    .ThenInclude(pc => pc.Category)
+                    .ThenInclude(pc => pc.Category);
+        }
+
+        public async Task<List<Project>> GettAll()
+        {
+            return await WithIncludes()
                 .OrderBy(p => p.Id)
                 .ToListAsync();
         }
 
         public async Task<Project?> GetByIdAsync(int id)
         {
-            return await _dbSet
-                .Include(p => p.Organization)
-                .Include(p => p.Categories)
-                    .ThenInclude(pc => pc.Category)
+            return await WithIncludes()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
     }

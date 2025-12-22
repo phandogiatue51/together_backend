@@ -1,4 +1,6 @@
-﻿using Together.DTOs.Organ;
+﻿using Together.DTOs.Certi;
+using Together.DTOs.Organ;
+using Together.DTOs.Pro;
 using Together.Helpers;
 using Together.Models;
 using Together.Repositories;
@@ -19,17 +21,7 @@ namespace Together.Services
         {
             var organs = await _organRepo.GettAll();
 
-            return organs.Select(m => new ViewOrganDto
-            {
-                Id = m.Id,
-                Name = m.Name,
-                Description = m.Description,
-                LogoUrl = m.LogoUrl,
-                Website = m.Website,
-                Email = m.Email,
-                PhoneNumber = m.PhoneNumber,
-                Address = m.Address
-            }).ToList();
+            return organs.Select(MapToViewOrganDto).ToList();
         }
 
         public async Task<ViewOrganDto?> GetOrganById(int id)
@@ -39,17 +31,7 @@ namespace Together.Services
             if (organs == null)
                 return null;
 
-            return new ViewOrganDto
-            {
-                Id = organs.Id,
-                Name = organs.Name,
-                Description = organs.Description,
-                LogoUrl = organs.LogoUrl,
-                Website = organs.Website,
-                Email = organs.Email,
-                PhoneNumber = organs.PhoneNumber,
-                Address = organs.Address
-            };
+            return MapToViewOrganDto(organs);
         }
 
         public async Task<(bool Success, string Message)> CreateOrgan(CreateOrganDto dto, IFormFile? imageFile = null)
@@ -114,6 +96,21 @@ namespace Together.Services
 
             await _organRepo.DeleteAsync(organ);
             return (true, "Organization deleted successfully!");
+        }
+
+        private ViewOrganDto MapToViewOrganDto(Organization organization)
+        {
+            return new ViewOrganDto
+            {
+                Id = organization.Id,
+                Name = organization.Name,
+                Description = organization.Description,
+                Website = organization.Website,
+                Email = organization.Email,
+                PhoneNumber = organization.PhoneNumber,
+                Address = organization.Address,
+                LogoUrl = organization.LogoUrl,
+            };            
         }
     }
 }

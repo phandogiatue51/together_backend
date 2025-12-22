@@ -51,5 +51,6 @@ namespace Together.Models
 
         [ForeignKey("ReviewedByStaffId")]
         public virtual Staff? ReviewedByStaff { get; set; }
+        public virtual ICollection<Certificate> SelectedCertificates { get; set; } = new List<Certificate>();
     }
 }

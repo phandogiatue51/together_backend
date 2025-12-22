@@ -73,5 +73,21 @@ namespace Together.Controllers
             }
             return Ok(result.Message);
         }
+
+        [HttpPost("{id}/verify")]
+        public async Task<IActionResult> VerifyCerti(int id, [FromBody] VerifyCertiDto dto)
+        {
+            var result = await _certificateService.VerifyCertificateAsync(id, dto);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterCertis([FromQuery] CertiFilterDto filterDto)
+        {
+            var certis = await _certificateService.FilterCertificatesAsync(filterDto);
+            return Ok(certis);
+        }
     }
 }

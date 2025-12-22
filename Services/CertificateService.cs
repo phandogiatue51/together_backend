@@ -179,6 +179,35 @@ namespace Together.Services
             }
         }
 
+        public async Task<(bool Success, string Message)> VerifyCertificateAsync(int id, VerifyCertiDto dto)
+        {
+            try
+            {
+                var certificate = await _certificateRepo.GetByIdAsync(id);
+                if (certificate == null)
+                    return (false, "Certificate not found.");
+                var admin = await _accountRepo.GetByIdAsync(dto.AdminId);
+                if (admin == null || admin.Role != AccountRole.Admin)
+                    return (false, "You don't have permission!");
+                certificate.Status = dto.Status;
+                certificate.VerifiedAt = DateTime.UtcNow;
+                certificate.VerifiedByAdminId = dto.AdminId;
+                await _certificateRepo.UpdateAsync(certificate);
+                return (true, "Certificate verification status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error verifying certificate: {ex.Message}");
+            }
+        }
+
+        public async Task<List<ViewCertiDto>> FilterCertificatesAsync(CertiFilterDto filterDto)
+        {
+            var certificates = await _certificateRepo.GetFilteredAsync(filterDto);
+            return certificates.Select(c => MapToViewCertiDto(c)).ToList();
+        }
+
+
         private ViewCertiDto MapToViewCertiDto(Certificate certificate)
         {
             return new ViewCertiDto

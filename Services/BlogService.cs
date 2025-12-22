@@ -1,4 +1,5 @@
 ﻿using Together.DTOs.Blog;
+using Together.DTOs.Certi;
 using Together.Helpers;
 using Together.Models;
 using Together.Repositories;
@@ -21,31 +22,7 @@ namespace Together.Services
         public async Task<List<ViewBlogDto>> GetAllBlogPostsAsync()
         {
             var blogs = await _blogRepo.GettAll();
-            return blogs.Select(blog => new ViewBlogDto
-            {
-                Id = blog.Id,
-                Title = blog.Title,
-                Subtitle = blog.Subtitle,
-                Excerpt = blog.Excerpt,
-                ImageUrl1 = blog.ImageUrl1,
-                ImageUrl2 = blog.ImageUrl2,
-                ImageUrl3 = blog.ImageUrl3,
-                ImageUrl4 = blog.ImageUrl4,
-                ImageUrl5 = blog.ImageUrl5,
-                Paragraph1 = blog.Paragraph1,
-                Paragraph2 = blog.Paragraph2,
-                Paragraph3 = blog.Paragraph3,
-                Paragraph4 = blog.Paragraph4,
-                Paragraph5 = blog.Paragraph5,
-                FeaturedImageUrl = blog.FeaturedImageUrl,
-                AuthorId = blog.AuthorId,
-                AuthorName = blog.Author.Name,
-                OrganizationId = blog.OrganizationId,
-                OrganizationName = blog.Organization?.Name,
-                PublishedDate = blog.PublishedDate,
-                UpdatedDate = blog.UpdatedDate,
-                Status = blog.Status
-            }).ToList();
+            return blogs.Select(MapToViewBlogDto).ToList();
         }
 
         public async Task<ViewBlogDto?> GetBlogPostByIdAsync(int id)
@@ -55,31 +32,7 @@ namespace Together.Services
             {
                 return null;
             }
-            return new ViewBlogDto
-            {
-                Id = blog.Id,
-                Title = blog.Title,
-                Subtitle = blog.Subtitle,
-                Excerpt = blog.Excerpt,
-                ImageUrl1 = blog.ImageUrl1,
-                ImageUrl2 = blog.ImageUrl2,
-                ImageUrl3 = blog.ImageUrl3,
-                ImageUrl4 = blog.ImageUrl4,
-                ImageUrl5 = blog.ImageUrl5,
-                Paragraph1 = blog.Paragraph1,
-                Paragraph2 = blog.Paragraph2,
-                Paragraph3 = blog.Paragraph3,
-                Paragraph4 = blog.Paragraph4,
-                Paragraph5 = blog.Paragraph5,
-                FeaturedImageUrl = blog.FeaturedImageUrl,
-                AuthorId = blog.AuthorId,
-                AuthorName = blog.Author.Name,
-                OrganizationId = blog.OrganizationId,
-                OrganizationName = blog.Organization?.Name,
-                PublishedDate = blog.PublishedDate,
-                UpdatedDate = blog.UpdatedDate,
-                Status = blog.Status
-            };
+            return MapToViewBlogDto(blog);
         }
 
         public async Task<(bool Success, string Message, int? BlogId)> CreateBlog(CreateBlogDto dto)
@@ -329,6 +282,35 @@ namespace Together.Services
             {
                 return (false, $"Error deleting blog: {ex.Message}");
             }
+        }
+
+        private ViewBlogDto MapToViewBlogDto(BlogPost blog)
+        {
+            return new ViewBlogDto
+            {
+                Id = blog.Id,
+                Title = blog.Title,
+                Subtitle = blog.Subtitle,
+                Excerpt = blog.Excerpt,
+                ImageUrl1 = blog.ImageUrl1,
+                ImageUrl2 = blog.ImageUrl2,
+                ImageUrl3 = blog.ImageUrl3,
+                ImageUrl4 = blog.ImageUrl4,
+                ImageUrl5 = blog.ImageUrl5,
+                Paragraph1 = blog.Paragraph1,
+                Paragraph2 = blog.Paragraph2,
+                Paragraph3 = blog.Paragraph3,
+                Paragraph4 = blog.Paragraph4,
+                Paragraph5 = blog.Paragraph5,
+                FeaturedImageUrl = blog.FeaturedImageUrl,
+                AuthorId = blog.AuthorId,
+                AuthorName = blog.Author.Name,
+                OrganizationId = blog.OrganizationId,
+                OrganizationName = blog.Organization?.Name,
+                PublishedDate = blog.PublishedDate,
+                UpdatedDate = blog.UpdatedDate,
+                Status = blog.Status
+            };
         }
     }
 }

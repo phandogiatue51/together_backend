@@ -26,16 +26,7 @@ namespace Together.Services
         {
             var accounts = await _accountRepo.GettAll();
 
-            return accounts
-                .Select(m => new ViewUserDto
-                {
-                    Id = (int)m.Id,
-                    Name = m.Name,
-                    Email = m.Email,
-                    Role = (AccountRole)m.Role,
-                    Status = (AccountStatus)m.Status
-                })
-                .ToList();
+            return accounts.Select(MapToViewUserDto).ToList();
         }
 
         public async Task<ViewUserDto?> GetAccountById(int id)
@@ -45,14 +36,7 @@ namespace Together.Services
             if (account == null)
                 return null;
 
-            return new ViewUserDto
-            {
-                Id = (int)account.Id,
-                Name = account.Name,
-                Email = account.Email,
-                Role = (AccountRole)account.Role,
-                Status = (AccountStatus)account.Status
-            };
+            return MapToViewUserDto(account);
         }
 
         public async Task<(bool Success, string Message, int AccountId)> CreateAccount(CreateUserDto dto, AccountRole role)
@@ -67,6 +51,9 @@ namespace Together.Services
             {
                 Name = dto.Name,
                 Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                DateOfBirth = dto.DateOfBirth,
+                IsFemale = dto.IsFemale,
                 PasswordHash = _passwordHelper.HashPassword(dto.Password),
                 Role = role,
                 Status = AccountStatus.Active
@@ -85,7 +72,22 @@ namespace Together.Services
             }
 
             account.Name = dto.Name ?? account.Name;
-            account.Email = dto.Email ?? account.Email;
+            account.PhoneNumber = dto.PhoneNumber ?? account.PhoneNumber;
+            account.DateOfBirth = dto.DateOfBirth ?? account.DateOfBirth;
+            account.IsFemale = dto.IsFemale ?? account.IsFemale;
+
+            if (!string.IsNullOrEmpty(dto.Email) && account.Email != dto.Email)
+            {
+                var emailExists = await _accountRepo.ExistsAsync(a =>
+                    a.Email == dto.Email && a.Id != id);
+
+                if (emailExists)
+                    return (false, "Email already in use by another account.");
+
+                account.Email = dto.Email;
+            }
+
+            account.UpdatedAt = DateTime.UtcNow; 
 
             await _accountRepo.UpdateAsync(account);
             return (true, "Account updated successfully!");
@@ -179,6 +181,21 @@ namespace Together.Services
             account.PasswordHash = _passwordHelper.HashPassword(dto.NewPassword);
             await _accountRepo.UpdateAsync(account);
             return (true, "Password changed successfully!");
+        }
+
+        public ViewUserDto MapToViewUserDto (Account account)
+        {
+            return new ViewUserDto
+            {
+                Id = (int)account.Id,
+                Name = account.Name,
+                Email = account.Email,
+                PhoneNumber = account.PhoneNumber ?? string.Empty,
+                DateOfBirth = account.DateOfBirth ?? default(DateOnly),
+                IsFemale = account.IsFemale ?? false,
+                Role = (AccountRole)account.Role,
+                Status = (AccountStatus)account.Status
+            };
         }
     }
 }

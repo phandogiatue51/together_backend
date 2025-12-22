@@ -102,6 +102,16 @@ namespace Together.Models
                 .WithMany(c => c.ProjectCategories)
                 .HasForeignKey(pc => pc.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<VolunteerApplication>()
+                .HasMany(va => va.SelectedCertificates)
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>(
+                    "ApplicationCertificate",
+                    j => j.HasOne<Certificate>().WithMany().HasForeignKey("CertificateId"),
+                    j => j.HasOne<VolunteerApplication>().WithMany().HasForeignKey("ApplicationId")
+                );
+
         }
     }
 }

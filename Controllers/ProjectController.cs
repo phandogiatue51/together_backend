@@ -36,19 +36,18 @@ namespace Together.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromForm] CreateProjectDto dto)
         {
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
 
-                var result = await _projectService.CreateProject(dto, dto.ImageUrl);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                if (!result.Success)
-                    return BadRequest(new { message = result.Message });
+            var result = await _projectService.CreateProject(dto, dto.ImageUrl);
 
-                return CreatedAtAction(nameof(GetProjectById),
-                    new { id = result.ProjectId },
-                    new { message = result.Message, projectId = result.ProjectId });
-            }
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            return CreatedAtAction(nameof(GetProjectById),
+                new { id = result.ProjectId },
+                new { message = result.Message, projectId = result.ProjectId });
         }
 
         [HttpPut("{id}")]

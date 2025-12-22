@@ -87,6 +87,7 @@ builder.Services.AddScoped<ProjectRepo>();
 builder.Services.AddScoped<StaffRepo>();
 builder.Services.AddScoped<CategoryRepo>();
 builder.Services.AddScoped<CertificateRepo>();
+builder.Services.AddScoped<ApplicationRepo>();
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<BlogService>();
@@ -95,6 +96,7 @@ builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<StaffService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<CertificateService>();
+builder.Services.AddScoped<ApplicationService>();
 
 builder.Services.AddScoped<PasswordHelper>();
 
