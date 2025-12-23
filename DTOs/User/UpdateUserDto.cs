@@ -7,5 +7,7 @@
         public string? PhoneNumber { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public bool? IsFemale { get; set; }
+        public IFormFile? ProfileImageUrl { get; set; }
+        public string? Bio { get; set; }
     }
 }

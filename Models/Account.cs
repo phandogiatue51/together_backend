@@ -15,8 +15,7 @@ namespace Together.Models
     {
         Active,
         Inactive,
-        Banned,
-        PendingVerification  
+        Banned
     }
 
     public class Account
@@ -52,7 +51,7 @@ namespace Together.Models
         public AccountRole Role { get; set; } = AccountRole.User;
 
         [Required]
-        public AccountStatus Status { get; set; } = AccountStatus.PendingVerification;
+        public AccountStatus Status { get; set; } = AccountStatus.Active;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

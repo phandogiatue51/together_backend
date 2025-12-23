@@ -15,6 +15,7 @@ namespace Together.DTOs.Pro
         public int OrganizationId { get; set; }
         public string? OrganizationName { get; set; }
         public ProjectStatus Status { get; set; }
+        public string? StatusName { get; set; }
         public int RequiredVolunteers { get; set; }
         public int CurrentVolunteers { get; set; }
         public DateTime CreatedAt { get; set; }

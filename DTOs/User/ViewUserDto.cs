@@ -10,7 +10,11 @@ namespace Together.DTOs.User
         public string PhoneNumber { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public bool IsFemale { get; set; }
+        public string? ProfileImageUrl { get; set; }
+        public string? Bio { get; set; }
         public AccountRole Role { get; set; }
+        public string? RoleName { get; set; }
         public AccountStatus Status { get; set; }
+        public string? StatusName { get; set; }
     }
 }

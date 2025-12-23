@@ -38,7 +38,7 @@ namespace Together.Services
             try
             {
                 var organization = await _organRepo.GetByIdAsync(dto.OrganizationId);
-                if (organization == null || !organization.IsActive)
+                if (organization == null || !organization.Status.Equals(OrganzationStatus.Active))
                     return (false, "Organization not found or inactive.", null);
 
                 if (dto.CategoryIds == null || !dto.CategoryIds.Any())
@@ -166,33 +166,10 @@ namespace Together.Services
             }
         }
 
-        private ViewProjectDto MapToViewProjectDto(Project project)
+        public async Task<List<ViewProjectDto>> GetProjectsByFilter(ProjectFilterDto dto)
         {
-            return new ViewProjectDto
-            {
-                Id = project.Id,
-                Title = project.Title,
-                Description = project.Description,
-                Type = project.Type,
-                StartDate = project.StartDate,
-                EndDate = project.EndDate,
-                Location = project.Location,
-                ImageUrl = project.ImageUrl,
-                OrganizationId = project.OrganizationId,
-                OrganizationName = project.Organization?.Name,
-                Status = project.Status,
-                RequiredVolunteers = project.RequiredVolunteers,
-                CurrentVolunteers = project.CurrentVolunteers,
-                CreatedAt = project.CreatedAt,
-                UpdatedAt = project.UpdatedAt,
-                Categories = project.Categories?.Select(pc => new ProjectCategoryDto
-                {
-                    CategoryId = pc.CategoryId,
-                    CategoryName = pc.Category?.Name ?? "Unknown",
-                    CategoryIcon = pc.Category?.Icon,
-                    CategoryColor = pc.Category?.Color
-                }).ToList() ?? new List<ProjectCategoryDto>(),
-            };
+            var projects = await _projectRepo.GetByFilterAsync(dto);
+            return projects.Select(project => MapToViewProjectDto(project)).ToList();
         }
 
         public async Task<(bool Success, string Message)> RemoveCategoryFromProject(int projectId, int categoryId)
@@ -223,6 +200,36 @@ namespace Together.Services
 
             await _projectRepo.DeleteAsync(project);
             return (true, "Project deleted successfully.");
+        }
+
+        private ViewProjectDto MapToViewProjectDto(Project project)
+        {
+            return new ViewProjectDto
+            {
+                Id = project.Id,
+                Title = project.Title,
+                Description = project.Description,
+                Type = project.Type,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Location = project.Location,
+                ImageUrl = project.ImageUrl,
+                OrganizationId = project.OrganizationId,
+                OrganizationName = project.Organization?.Name,
+                Status = project.Status,
+                StatusName = project.Status.ToString(),
+                RequiredVolunteers = project.RequiredVolunteers,
+                CurrentVolunteers = project.CurrentVolunteers,
+                CreatedAt = project.CreatedAt,
+                UpdatedAt = project.UpdatedAt,
+                Categories = project.Categories?.Select(pc => new ProjectCategoryDto
+                {
+                    CategoryId = pc.CategoryId,
+                    CategoryName = pc.Category?.Name ?? "Unknown",
+                    CategoryIcon = pc.Category?.Icon,
+                    CategoryColor = pc.Category?.Color
+                }).ToList() ?? new List<ProjectCategoryDto>(),
+            };
         }
     }
 }

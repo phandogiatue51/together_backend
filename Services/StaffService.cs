@@ -13,15 +13,17 @@ namespace Together.Services
         private readonly OrganizationRepo _organRepo;
         private readonly AccountRepo _accountRepo;
         private readonly PasswordHelper _passwordHelper;
+        private readonly CloudinaryService _cloudinaryService;
 
         public StaffService(StaffRepo staffRepo, AccountService accountService, OrganizationRepo organRepo,
-            AccountRepo accountRepo, PasswordHelper passwordHelper)
+            AccountRepo accountRepo, PasswordHelper passwordHelper, CloudinaryService cloudinaryService)
         {
             _staffRepo = staffRepo;
             _accountService = accountService;
             _organRepo = organRepo;
             _accountRepo = accountRepo;
             _passwordHelper = passwordHelper;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<List<ViewStaffDto>> GetAllStaff()
@@ -40,6 +42,12 @@ namespace Together.Services
         {
             var staffs = await _staffRepo.GetStaffByOrganId(organId);
             return staffs.Select(MapToViewStaffDto).ToList();
+        }
+
+        public async Task<ViewStaffDto?> GetStaffByAccountId(int accountId)
+        {
+            var staff = await _staffRepo.GetByAccountId(accountId);
+            return MapToViewStaffDto(staff);
         }
 
         public async Task<(bool Success, string Message, int? StaffId)> CreateStaff(CreateStaffDto dto)
@@ -89,11 +97,19 @@ namespace Together.Services
             {
                 staff.IsActive = dto.IsActive.Value;
                 if (!dto.IsActive.Value)
-                    staff.LeftAt = DateTime.UtcNow; 
+                    staff.LeftAt = DateTime.UtcNow;
+                else if (dto.IsActive.Value && staff.LeftAt.HasValue)
+                    staff.LeftAt = null; 
             }
 
             if (staff.Account != null)
             {
+                if (dto.ProfileImageUrl != null)
+                {
+                    var imageUrl = await _cloudinaryService.UploadImageAsync(dto.ProfileImageUrl);
+                    staff.Account.ProfileImageUrl = imageUrl;
+                }
+
                 if (!string.IsNullOrEmpty(dto.Name))
                     staff.Account.Name = dto.Name;
 
@@ -120,6 +136,9 @@ namespace Together.Services
                 if (dto.IsFemale.HasValue)
                     staff.Account.IsFemale = dto.IsFemale.Value;
 
+                if (!string.IsNullOrEmpty(dto.Bio))
+                    staff.Account.Bio = dto.Bio;
+
                 staff.Account.UpdatedAt = DateTime.UtcNow;
             }
 
@@ -135,6 +154,12 @@ namespace Together.Services
 
             await _staffRepo.DeleteAsync(staff);
             return (true, "Staff deleted successfully");
+        }
+
+        public async Task<List<ViewStaffDto>> GetStaffByFilterAsync(StaffFilterDto dto)
+        {
+            var staffs = await _staffRepo.GetByFilterAsync(dto);
+            return staffs.Select(MapToViewStaffDto).ToList();
         }
 
         private ViewStaffDto MapToViewStaffDto(Staff staff)

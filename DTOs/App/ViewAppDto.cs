@@ -9,9 +9,13 @@ namespace Together.DTOs.App
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
+        public string? ProjectTitle { get; set; }
+        public int? OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
         public int VolunteerId { get; set; }
         public string? VolunteerName { get; set; }
         public ApplicationStatus Status { get; set; } 
+        public string? StatusName { get; set; }
         public string? RelevantExperience { get; set; }
 
         public DateTime AppliedAt { get; set; } = DateTime.UtcNow;

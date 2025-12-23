@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Together.DTOs;
 using Together.Services;
 
 namespace Together.Controllers
@@ -15,7 +16,7 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<ActionResult<List<ViewCateDto>>> GetAllCategories()
         {
             var categories = await _cateService.GetAllCategoriesAsync();
             return Ok(categories);

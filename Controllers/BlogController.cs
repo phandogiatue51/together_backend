@@ -16,14 +16,14 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBlogs()
+        public async Task<ActionResult<List<ViewBlogDto>>> GetAllBlogs()
         {
             var blogs = await _blogService.GetAllBlogPostsAsync();
             return Ok(blogs);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBlogById(int id)
+        public async Task<ActionResult<ViewBlogDto>> GetBlogById(int id)
         {
             var blog = await _blogService.GetBlogPostByIdAsync(id);
             if (blog == null)
@@ -32,7 +32,7 @@ namespace Together.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBlog([FromForm] CreateBlogDto dto)
+        public async Task<ActionResult> CreateBlog([FromForm] CreateBlogDto dto)
         {
             var result = await _blogService.CreateBlog(dto);
             if (!result.Success)
@@ -40,8 +40,8 @@ namespace Together.Controllers
             return Ok(result.Message);
         }
 
-        [HttpPut("id")]
-        public async Task<IActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto dto, int accountId)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto dto, int accountId)
         {
             var result = await _blogService.UpdateBlog(id, dto, accountId);
             if (!result.Success)
@@ -50,12 +50,32 @@ namespace Together.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBlog(int id, int accountId)
+        public async Task<ActionResult> DeleteBlog(int id, int accountId)
         {
             var result = await _blogService.DeleteBlog(id, accountId);
             if (!result.Success)
                 return BadRequest(result.Message);
             return Ok(result.Message);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<ViewBlogDto>>> GetBlogsByFilter(
+            [FromQuery] string? Title,
+            [FromQuery] int? AuthorId,
+            [FromQuery] int? OrganizationId,
+            [FromQuery] DateTime? PublishDate,
+            [FromQuery] bool? Status)
+        {
+            var filter = new BlogFilterDto
+            {
+                Title = Title,
+                AuthorId = AuthorId,
+                OrganizationId = OrganizationId,
+                PublishDate = PublishDate,
+                Status = Status
+            };
+            var blogs = await _blogService.GetBlogsByFilterAsync(filter);
+            return Ok(blogs);
         }
     }
 }

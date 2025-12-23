@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Together.DTOs.Blog;
 using Together.Models;
 
 namespace Together.Repositories
@@ -25,6 +26,33 @@ namespace Together.Repositories
         {
             return await WithIncludes()
                 .FirstOrDefaultAsync(s => s.Id == id);
+        }
+
+        public async Task<List<BlogPost>> GetByFilterAsync(BlogFilterDto dto)
+        {
+            IQueryable<BlogPost> query = WithIncludes();
+
+            if (!string.IsNullOrEmpty(dto.Title))
+            {
+                query = query.Where(s => s.Title.Contains(dto.Title));
+            }
+            if (dto.AuthorId.HasValue)
+            {
+                query = query.Where(s => s.AuthorId == dto.AuthorId.Value);
+            }
+            if (dto.OrganizationId.HasValue)
+            {
+                query = query.Where(s => s.OrganizationId == dto.OrganizationId.Value);
+            }
+            if (dto.PublishDate.HasValue)
+            {
+                query = query.Where(s => s.PublishedDate.Date == dto.PublishDate.Value.Date);
+            }
+            if (dto.Status.HasValue)
+            {
+                query = query.Where(s => s.Status == dto.Status.Value);
+            }
+            return await query.ToListAsync();
         }
     }
 }

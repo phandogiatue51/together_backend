@@ -80,8 +80,7 @@ namespace Together.Services
             }
         }
 
-        public async Task<(bool Success, string Message)> UpdateCertificateAsync(
-            int id, CreateCertiDto dto, IFormFile? imageFile)
+        public async Task<(bool Success, string Message)> UpdateCertificateAsync(int id, CreateCertiDto dto, IFormFile? imageFile)
         {
             try
             {
@@ -224,6 +223,7 @@ namespace Together.Services
                 Description = certificate.Description,
                 ImageUrl = certificate.ImageUrl,
                 Status = certificate.Status,
+                StatusName = certificate.Status.ToString(),
                 CreatedAt = certificate.CreatedAt,
                 VerifiedAt = certificate.VerifiedAt,
                 VerifiedByAdminId = certificate.VerifiedByAdminId

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.App;
 using Together.DTOs.Certi;
+using Together.Models;
 using Together.Services;
 
 namespace Together.Controllers
@@ -18,14 +19,14 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllApplications()
+        public async Task<ActionResult<ViewAppDto>> GetAllApplications()
         {
             var apps = await _applicationService.GetAllApplicationsAsync();
             return Ok(apps);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetApplicationById(int id)
+        public async Task<ActionResult<ViewAppDto>> GetApplicationById(int id)
         {
             var app = await _applicationService.GetApplicationByIdAsync(id);
             if (app == null)
@@ -34,7 +35,7 @@ namespace Together.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateApplication([FromBody] CreateAppDto dto)
+        public async Task<ActionResult> CreateApplication([FromBody] CreateAppDto dto)
         {
             var result = await _applicationService.CreateApplicationAsync(dto);
             if (!result.Success)
@@ -45,7 +46,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateApplication(int id, [FromBody] UpdateAppDto dto)
+        public async Task<ActionResult> UpdateApplication(int id, [FromBody] UpdateAppDto dto)
         {
             var result = await _applicationService.UpdateApplicationAsync(id, dto);
             if (!result.Success)
@@ -56,7 +57,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("review/{id}")]
-        public async Task<IActionResult> ReviewApplication(int id, ReviewAppDto dto)
+        public async Task<ActionResult> ReviewApplication(int id, ReviewAppDto dto)
         {
             var result = await _applicationService.ReviewApplicationAsync(id, dto);
             if (!result.Success)
@@ -67,7 +68,7 @@ namespace Together.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteApplication(int id)
+        public async Task<ActionResult> DeleteApplication(int id)
         {
             var result = await _applicationService.DeleteApplicationAsync(id);
             if (!result.Success)
@@ -78,8 +79,20 @@ namespace Together.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetApplicationsByFilter([FromBody] AppFilterDto filter)
+        public async Task<ActionResult<List<ViewAppDto>>> GetApplicationsByFilter(
+            [FromQuery] int? projectId = null,
+            [FromQuery] int? volunteerId = null,
+            [FromQuery] ApplicationStatus? status = null,
+            [FromQuery] int? organizationId = null)
         {
+            var filter = new AppFilterDto
+            {
+                ProjectId = projectId,
+                Status = status,
+                VolunteerId = volunteerId,
+                OrganizationId = organizationId
+            };
+
             var apps = await _applicationService.GetApplicationsByFilterAsync(filter);
             return Ok(apps);
         }

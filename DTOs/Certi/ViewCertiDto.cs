@@ -18,6 +18,7 @@ namespace Together.DTOs.Certi
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
         public CertificateStatus Status { get; set; }
+        public string? StatusName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? VerifiedAt { get; set; }
         public int? VerifiedByAdminId { get; set; }

@@ -14,12 +14,17 @@ namespace Together.Services
         private readonly AccountRepo _accountRepo;
         private readonly PasswordHelper _passwordHelper;
         private readonly IConfiguration _configuration;
+        private readonly StaffRepo _staffRepo;
+        private readonly CloudinaryService _imageStorageService;
 
-        public AccountService(AccountRepo accountRepo, PasswordHelper passwordHelper, IConfiguration configuration)
+        public AccountService(AccountRepo accountRepo, PasswordHelper passwordHelper, IConfiguration configuration, 
+            StaffRepo staffRepo, CloudinaryService imageStorageService)
         {
             _accountRepo = accountRepo;
             _passwordHelper = passwordHelper;
             _configuration = configuration;
+            _staffRepo = staffRepo;
+            _imageStorageService = imageStorageService;
         }
 
         public async Task<List<ViewUserDto>> GetAllAccounts()
@@ -63,7 +68,7 @@ namespace Together.Services
             return (true, "Account created successfully!", account.Id);
         }
 
-        public async Task<(bool Success, string Message)> UpdateAccount(int id, UpdateUserDto dto)
+        public async Task<(bool Success, string Message)> UpdateAccount(int id, UpdateUserDto dto, IFormFile? imageFile)
         {
             var account = await _accountRepo.GetByIdAsync(id);
             if (account == null)
@@ -75,6 +80,7 @@ namespace Together.Services
             account.PhoneNumber = dto.PhoneNumber ?? account.PhoneNumber;
             account.DateOfBirth = dto.DateOfBirth ?? account.DateOfBirth;
             account.IsFemale = dto.IsFemale ?? account.IsFemale;
+            account.Bio = dto.Bio ?? account.Bio;
 
             if (!string.IsNullOrEmpty(dto.Email) && account.Email != dto.Email)
             {
@@ -87,7 +93,13 @@ namespace Together.Services
                 account.Email = dto.Email;
             }
 
-            account.UpdatedAt = DateTime.UtcNow; 
+            account.UpdatedAt = DateTime.UtcNow;
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                account.ProfileImageUrl = await _imageStorageService.UpdateImageAsync(
+                    account.ProfileImageUrl, imageFile);
+            }
 
             await _accountRepo.UpdateAsync(account);
             return (true, "Account updated successfully!");
@@ -121,7 +133,7 @@ namespace Together.Services
             if (!_passwordHelper.VerifyPassword(dto.Password, user.PasswordHash))
                 return (false, "Wrong password", null, default(AccountRole));
 
-            var claims = GenerateUserClaims(user);
+            var claims = await GenerateUserClaims(user);
 
             var key = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(key))
@@ -149,7 +161,7 @@ namespace Together.Services
             return (true, "Login successful", tokenString, user.Role);
         }
 
-        private List<Claim> GenerateUserClaims(Account user)
+        private async Task<List<Claim>> GenerateUserClaims(Account user)
         {
             var claims = new List<Claim>
             {
@@ -160,6 +172,19 @@ namespace Together.Services
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
                 new Claim(ClaimTypes.Role, user.Role.ToString() ?? "User"),
             };
+
+            if (user.Role == AccountRole.Staff)
+            {
+                var staff = await _staffRepo.GetByAccountId(user.Id);
+
+                if (staff != null)
+                {
+                    claims.Add(new Claim("StaffId", staff.Id.ToString()));
+                    claims.Add(new Claim("OrganizationId", staff.OrganizationId.ToString()));
+                    claims.Add(new Claim("StaffRole", staff.Role.ToString()));
+                }
+            }
+
             return claims;
         }
 
@@ -183,6 +208,12 @@ namespace Together.Services
             return (true, "Password changed successfully!");
         }
 
+        public async Task<List<ViewUserDto>> GetAccountsByFilter(UserFilterDto filter)
+        {
+            var accounts = await _accountRepo.GetByFilterAsync(filter);
+            return accounts.Select(MapToViewUserDto).ToList();
+        }
+
         public ViewUserDto MapToViewUserDto (Account account)
         {
             return new ViewUserDto
@@ -193,8 +224,12 @@ namespace Together.Services
                 PhoneNumber = account.PhoneNumber ?? string.Empty,
                 DateOfBirth = account.DateOfBirth ?? default(DateOnly),
                 IsFemale = account.IsFemale ?? false,
+                Bio = account.Bio,
+                ProfileImageUrl = account.ProfileImageUrl,
                 Role = (AccountRole)account.Role,
-                Status = (AccountStatus)account.Status
+                RoleName = account.Role.ToString(),
+                Status = (AccountStatus)account.Status,
+                StatusName = account.Status.ToString()
             };
         }
     }

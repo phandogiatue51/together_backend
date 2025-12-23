@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Together.DTOs.Organ;
 using Together.DTOs.Pro;
+using Together.Models;
 using Together.Services;
 
 namespace Together.Controllers
@@ -17,14 +17,14 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<ActionResult<List<ViewProjectDto>>> GetAllProjects()
         {
             var projects = await _projectService.GetAllProjects();
             return Ok(projects);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProjectById(int id)
+        public async Task<ActionResult<ViewProjectDto>> GetProjectById(int id)
         {
             var project = await _projectService.GetProjectById(id);
             if (project == null)
@@ -34,7 +34,7 @@ namespace Together.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProject([FromForm] CreateProjectDto dto)
+        public async Task<ActionResult> CreateProject([FromForm] CreateProjectDto dto)
         {
 
             if (!ModelState.IsValid)
@@ -51,7 +51,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProject(int id, [FromForm] UpdateProjectDto dto)
+        public async Task<ActionResult> UpdateProject(int id, [FromForm] UpdateProjectDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,12 +65,40 @@ namespace Together.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProject(int id)
+        public async Task<ActionResult> DeleteProject(int id)
         {
             var result = await _projectService.DeleteProject(id);
             if (!result.Success)
                 return BadRequest(new { message = result.Message });
             return Ok(new { message = result.Message });
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<ViewProjectDto>>> GetProjectsByFilter(
+            [FromQuery] string? Title,
+            [FromQuery] ProjectType? Type,
+            [FromQuery] DateTime? StartDate,
+            [FromQuery] DateTime? EndDate,
+            [FromQuery] string? Location,
+            [FromQuery] ProjectStatus? Status,
+            [FromQuery] int? RequiredVolunteers,
+            [FromQuery] int? CurrentVolunteers,
+            [FromQuery] DateTime? CreatedAt)
+        {
+            var filter = new ProjectFilterDto
+            {
+                Title = Title,
+                Type = Type,
+                StartDate = StartDate,
+                EndDate = EndDate,
+                Location = Location,
+                Status = Status,
+                RequiredVolunteers = RequiredVolunteers,
+                CurrentVolunteers = CurrentVolunteers,
+                CreatedAt = CreatedAt
+            };
+            var projects = await _projectService.GetProjectsByFilter(filter);
+            return Ok(projects);
         }
     }
 }

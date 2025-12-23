@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Together.DTOs.Pro;
 using Together.Models;
 
 namespace Together.Repositories
@@ -26,6 +27,49 @@ namespace Together.Repositories
         {
             return await WithIncludes()
                 .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<List<Project>> GetByFilterAsync(ProjectFilterDto dto)
+        {
+            var query = WithIncludes().AsQueryable();
+            if (!string.IsNullOrEmpty(dto.Title))
+            {
+                query = query.Where(p => p.Title.Contains(dto.Title));
+            };
+            if (dto.StartDate.HasValue)
+            {
+                query = query.Where(p => p.StartDate >= dto.StartDate.Value);
+            };
+            if (dto.EndDate.HasValue)
+            {
+                query = query.Where(p => p.EndDate <= dto.EndDate.Value);
+            };
+            if (!string.IsNullOrEmpty(dto.Location))
+            {
+                query = query.Where(p => p.Location != null && p.Location.Contains(dto.Location));
+            };
+            if (dto.RequiredVolunteers.HasValue)
+            {
+                query = query.Where(p => p.RequiredVolunteers >= dto.RequiredVolunteers.Value);
+            }
+            ;
+            if (dto.CurrentVolunteers.HasValue)
+            {
+                query = query.Where(p => p.CurrentVolunteers >= dto.CurrentVolunteers.Value);
+            };
+            if (dto.CreatedAt.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt.Date == dto.CreatedAt.Value.Date);
+            };
+            if (dto.Type.HasValue)
+            {
+                query = query.Where(p => p.Type == dto.Type.Value);
+            };
+            if (dto.Status.HasValue)
+            {
+                query = query.Where(p => p.Status == dto.Status.Value);
+            }
+            return await query.ToListAsync();
         }
     }
 }

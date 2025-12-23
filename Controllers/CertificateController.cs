@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Together.DTOs.App;
 using Together.DTOs.Certi;
 using Together.DTOs.Organ;
+using Together.Models;
 using Together.Services;
 
 namespace Together.Controllers
@@ -17,14 +19,14 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCertis()
+        public async Task<ActionResult<List<ViewCertiDto>>> GetAllCertis()
         {
             var certis = await _certificateService.GetAllCertificatesAsync();
             return Ok(certis);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCertiById(int id)
+        public async Task<ActionResult<ViewCertiDto>> GetCertiById(int id)
         {
             var certis = await _certificateService.GetCertificateByIdAsync(id);
             if (certis == null)
@@ -33,7 +35,7 @@ namespace Together.Controllers
         }
 
         [HttpGet("account/{accountId}")]
-        public async Task<IActionResult> GetCertisByAccountId(int accountId)
+        public async Task<ActionResult> GetCertisByAccountId(int accountId)
         {
             var certis = await _certificateService.GetCertificatesByAccountIdAsync(accountId);
             if (certis == null)
@@ -42,7 +44,7 @@ namespace Together.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCerti([FromForm] CreateCertiDto dto)
+        public async Task<ActionResult> CreateCerti([FromForm] CreateCertiDto dto)
         {
             var result = await _certificateService.CreateCertificateAsync(dto, dto.ImageUrl);
 
@@ -53,7 +55,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCerti(int id, [FromForm] CreateCertiDto dto)
+        public async Task<ActionResult> UpdateCerti(int id, [FromForm] CreateCertiDto dto)
         {
             var result = await _certificateService.UpdateCertificateAsync(id, dto, dto.ImageUrl);
 
@@ -64,7 +66,7 @@ namespace Together.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCerti(int id)
+        public async Task<ActionResult> DeleteCerti(int id)
         {
             var result = await _certificateService.DeleteCertificateAsync(id);
             if (!result.Success)
@@ -75,7 +77,7 @@ namespace Together.Controllers
         }
 
         [HttpPost("{id}/verify")]
-        public async Task<IActionResult> VerifyCerti(int id, [FromBody] VerifyCertiDto dto)
+        public async Task<ActionResult> VerifyCerti(int id, [FromBody] VerifyCertiDto dto)
         {
             var result = await _certificateService.VerifyCertificateAsync(id, dto);
             if (!result.Success)
@@ -84,9 +86,21 @@ namespace Together.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> FilterCertis([FromQuery] CertiFilterDto filterDto)
+        public async Task<ActionResult<List<ViewCertiDto>>> FilterCertis(
+            [FromQuery] int? accountId = null,
+            [FromQuery] int? categoryId = null,
+            [FromQuery] string? certificateName = null,
+            [FromQuery] CertificateStatus? status = null)
         {
-            var certis = await _certificateService.FilterCertificatesAsync(filterDto);
+            var filter = new CertiFilterDto
+            {
+                AccountId = accountId,
+                CategoryId = categoryId,
+                CertificateName = certificateName,
+                Status = status
+            };
+          
+            var certis = await _certificateService.FilterCertificatesAsync(filter);
             return Ok(certis);
         }
     }

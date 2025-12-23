@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Staf;
+using Together.Models;
 using Together.Services;
 
 namespace Together.Controllers
@@ -15,14 +16,14 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllStaff()
+        public async Task<ActionResult<List<ViewStaffDto>>> GetAllStaff()
         {
             var staffs = await _staffService.GetAllStaff();
             return Ok(staffs);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStaffById(int id)
+        public async Task<ActionResult<ViewStaffDto>> GetStaffById(int id)
         {
             var staff = await _staffService.GetStaffById(id);
             if (staff == null)
@@ -31,14 +32,14 @@ namespace Together.Controllers
         }
 
         [HttpGet("organization/{organId}")]
-        public async Task<IActionResult> GetStaffByOrganId(int organId)
+        public async Task<ActionResult<List<ViewStaffDto>>> GetStaffByOrganId(int organId)
         {
             var staffs = await _staffService.GetStaffByOrganId(organId);
             return Ok(staffs);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStaff([FromBody] CreateStaffDto dto)
+        public async Task<ActionResult> CreateStaff([FromBody] CreateStaffDto dto)
         {
             var result = await _staffService.CreateStaff(dto);
 
@@ -49,7 +50,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStaff(int id, [FromBody] UpdateStaffDto dto)
+        public async Task<ActionResult> UpdateStaff(int id, [FromBody] UpdateStaffDto dto)
         {
             var result = await _staffService.UpdateStaff(id, dto);
             if (!result.Success)
@@ -59,13 +60,39 @@ namespace Together.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStaff([FromQuery] int staffId)
+        public async Task<ActionResult> DeleteStaff(int id)
         {
-            var result = await _staffService.DeleteStaff(staffId);
+            var result = await _staffService.DeleteStaff(id);
             if (!result.Success)
                 return BadRequest(result.Message);
 
             return Ok(result.Message);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<ViewStaffDto>>> GetStaffByFilter(
+            [FromQuery] string? Name,
+            [FromQuery] string? Email,
+            [FromQuery] string? PhoneNumber,
+            [FromQuery] int? OrganizationId,
+            [FromQuery] StaffRole? Role,
+            [FromQuery] DateTime? JoinedAt,
+            [FromQuery] DateTime? LeftAt,
+            [FromQuery] bool? IsActive)
+        {
+            var dto = new StaffFilterDto
+            {
+                Name = Name,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                OrganizationId = OrganizationId,
+                Role = Role,
+                JoinedAt = JoinedAt,
+                LeftAt = LeftAt,
+                IsActive = IsActive
+            };
+            var staffs = await _staffService.GetStaffByFilterAsync(dto);
+            return Ok(staffs);
         }
     }
 }

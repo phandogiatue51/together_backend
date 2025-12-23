@@ -284,6 +284,12 @@ namespace Together.Services
             }
         }
 
+        public async Task<List<ViewBlogDto>> GetBlogsByFilterAsync(BlogFilterDto dto)
+        {
+            var blogs = await _blogRepo.GetByFilterAsync(dto);
+            return blogs.Select(MapToViewBlogDto).ToList();
+        }
+
         private ViewBlogDto MapToViewBlogDto(BlogPost blog)
         {
             return new ViewBlogDto

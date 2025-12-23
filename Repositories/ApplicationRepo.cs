@@ -11,8 +11,10 @@ public class ApplicationRepo : BaseRepo<VolunteerApplication>
     {
         return _dbSet
             .Include(a => a.Project)
+                .ThenInclude(p => p.Organization)   
             .Include(a => a.Volunteer)
             .Include(a => a.SelectedCertificates)
+                .ThenInclude(c => c.Category)       
             .Include(a => a.ReviewedByStaff);
     }
 
@@ -42,10 +44,9 @@ public class ApplicationRepo : BaseRepo<VolunteerApplication>
         if (filter.OrganizationId.HasValue)
             query = query.Where(a => a.Project.OrganizationId == filter.OrganizationId.Value);
 
-        if (!string.IsNullOrEmpty(filter.Status))
+        if (filter.Status.HasValue)
         {
-            if (Enum.TryParse<ApplicationStatus>(filter.Status, out var statusEnum))
-                query = query.Where(a => a.Status == statusEnum);
+            query = query.Where(a => a.Status == filter.Status.Value);
         }
 
         return await query

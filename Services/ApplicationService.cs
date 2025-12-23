@@ -27,7 +27,6 @@ namespace Together.Services
         {
             var apps = await _applicationRepo.GetAllAsync();
             return apps.Select(MapToViewAppDto).ToList();
-
         }
 
         public async Task<ViewAppDto?> GetApplicationByIdAsync(int id)
@@ -124,28 +123,7 @@ namespace Together.Services
         public async Task<List<ViewAppDto>> GetApplicationsByFilterAsync(AppFilterDto filter)
         {
             var apps = await _applicationRepo.GetByFilterAsync(filter);
-            return apps.Select(a => new ViewAppDto
-            {
-                Id = a.Id,
-                ProjectId = a.ProjectId,
-                VolunteerId = a.VolunteerId,
-                Status = a.Status,
-                RelevantExperience = a.RelevantExperience,
-                AppliedAt = a.AppliedAt,
-                ReviewedAt = a.ReviewedAt,
-                ReviewedByStaffId = a.ReviewedByStaffId,
-                RejectionReason = a.RejectionReason,
-                Feedback = a.Feedback,
-                SelectedCertificates = a.SelectedCertificates.Select(c => new ViewCertiDto
-                {
-                    Id = c.Id,
-                    CertificateName = c.CertificateName,
-                    IssuingOrganization = c.IssuingOrganization,
-                    Status = c.Status,
-                    IssueDate = c.IssueDate,
-                    ExpiryDate = c.ExpiryDate
-                }).ToList()
-            }).ToList();
+            return apps.Select(MapToViewAppDto).ToList();
         }
 
         public async Task<(bool Success, string Message)> ReviewApplicationAsync(int id, ReviewAppDto dto)
@@ -184,9 +162,13 @@ namespace Together.Services
             {
                 Id = a.Id,
                 ProjectId = a.ProjectId,
+                ProjectTitle = a.Project?.Title,
+                OrganizationId = a.Project?.OrganizationId,
+                OrganizationName = a.Project?.Organization?.Name,
                 VolunteerId = a.VolunteerId,
                 VolunteerName = a.Volunteer?.Name,
                 Status = a.Status,
+                StatusName = a.Status.ToString(),
                 RelevantExperience = a.RelevantExperience,
                 AppliedAt = a.AppliedAt,
                 ReviewedAt = a.ReviewedAt,
@@ -207,6 +189,7 @@ namespace Together.Services
                     Description = certificate.Description,
                     ImageUrl = certificate.ImageUrl,
                     Status = certificate.Status,
+                    StatusName = certificate.Status.ToString(),
                     CreatedAt = certificate.CreatedAt,
                     VerifiedAt = certificate.VerifiedAt,
                     VerifiedByAdminId = certificate.VerifiedByAdminId

@@ -12,6 +12,14 @@ namespace Together.Models
         Government      
     }
 
+    public enum OrganzationStatus
+    {
+        Pending,
+        Active,
+        Unactive,
+        Rejected
+    }
+
     public class Organization
     {
         [Key]
@@ -43,8 +51,9 @@ namespace Together.Models
 
         public string? LogoUrl { get; set; }
 
-        [Required]
-        public bool IsActive { get; set; } = false;
+        public string? RejectionReason { get; set; }
+
+        public OrganzationStatus Status { get; set; } = OrganzationStatus.Pending;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
