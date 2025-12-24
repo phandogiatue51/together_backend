@@ -19,10 +19,10 @@ namespace Together.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ViewAppDto>> GetAllApplications()
+        public async Task<ActionResult<List<ViewAppDto>>> GetAllApplications()
         {
             var apps = await _applicationService.GetAllApplicationsAsync();
-            return Ok(apps);
+            return apps;
         }
 
         [HttpGet("{id}")]
@@ -31,7 +31,7 @@ namespace Together.Controllers
             var app = await _applicationService.GetApplicationByIdAsync(id);
             if (app == null)
                 return NotFound();
-            return Ok(app);
+            return app;
         }
 
         [HttpPost]
@@ -94,7 +94,7 @@ namespace Together.Controllers
             };
 
             var apps = await _applicationService.GetApplicationsByFilterAsync(filter);
-            return Ok(apps);
+            return apps;
         }
     }
 }

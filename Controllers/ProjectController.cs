@@ -20,7 +20,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewProjectDto>>> GetAllProjects()
         {
             var projects = await _projectService.GetAllProjects();
-            return Ok(projects);
+            return projects;
         }
 
         [HttpGet("{id}")]
@@ -30,7 +30,7 @@ namespace Together.Controllers
             if (project == null)
                 return NotFound(new { message = "Project not found" });
 
-            return Ok(project);
+            return project;
         }
 
         [HttpPost]
@@ -98,7 +98,7 @@ namespace Together.Controllers
                 CreatedAt = CreatedAt
             };
             var projects = await _projectService.GetProjectsByFilter(filter);
-            return Ok(projects);
+            return projects;
         }
     }
 }

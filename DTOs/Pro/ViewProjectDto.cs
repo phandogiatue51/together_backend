@@ -8,6 +8,7 @@ namespace Together.DTOs.Pro
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public ProjectType Type { get; set; }
+        public string? TypeName { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Location { get; set; }

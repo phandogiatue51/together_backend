@@ -50,7 +50,8 @@ namespace Together.Repositories
             }
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                query = query.Where(a => a.Name.Contains(filter.Name));
+                var name = filter.Name.ToLower();
+                query = query.Where(a => a.Name.ToLower().Contains(name));
             }
             if (!string.IsNullOrEmpty(filter.Email))
             {

@@ -19,7 +19,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewBlogDto>>> GetAllBlogs()
         {
             var blogs = await _blogService.GetAllBlogPostsAsync();
-            return Ok(blogs);
+            return blogs;
         }
 
         [HttpGet("{id}")]
@@ -28,7 +28,7 @@ namespace Together.Controllers
             var blog = await _blogService.GetBlogPostByIdAsync(id);
             if (blog == null)
                 return NotFound();
-            return Ok(blog);
+            return blog;
         }
 
         [HttpPost]
@@ -75,7 +75,7 @@ namespace Together.Controllers
                 Status = Status
             };
             var blogs = await _blogService.GetBlogsByFilterAsync(filter);
-            return Ok(blogs);
+            return blogs;
         }
     }
 }

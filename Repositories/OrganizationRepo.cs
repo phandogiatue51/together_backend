@@ -25,21 +25,26 @@ namespace Together.Repositories
         public async Task<List<Organization>> GetByFilterAsync(OrganFilterDto dto)
         {
             var query = _dbSet.AsQueryable();
+
             if (!string.IsNullOrEmpty(dto.Name))
             {
-                query = query.Where(o => o.Name.Contains(dto.Name));
+                var name = dto.Name.ToLower();
+                query = query.Where(o => o.Name.ToLower().Contains(name));
             }
             if (!string.IsNullOrEmpty(dto.Address))
             {
-                query = query.Where(o => o.Address.Contains(dto.Address));
+                var address = dto.Address.ToLower();
+                query = query.Where(o => o.Address.ToLower().Contains(address));
             }
             if (!string.IsNullOrEmpty(dto.Email))
             {
-                query = query.Where(o => o.Email.Contains(dto.Email));
+                var email = dto.Email.ToLower();
+                query = query.Where(o => o.Email.ToLower().Contains(email));
             }
             if (!string.IsNullOrEmpty(dto.PhoneNumber))
             {
-                query = query.Where(o => o.PhoneNumber.Contains(dto.PhoneNumber));
+                var phone = dto.PhoneNumber.ToLower();
+                query = query.Where(o => o.PhoneNumber.ToLower().Contains(phone));
             }
             if (dto.Status.HasValue)
             {

@@ -1,5 +1,6 @@
 ﻿using Together.DTOs.App;
 using Together.DTOs.Certi;
+using Together.Helpers;
 using Together.Models;
 using Together.Repositories;
 
@@ -168,7 +169,7 @@ namespace Together.Services
                 VolunteerId = a.VolunteerId,
                 VolunteerName = a.Volunteer?.Name,
                 Status = a.Status,
-                StatusName = a.Status.ToString(),
+                StatusName = a.Status.ToFriendlyName(),
                 RelevantExperience = a.RelevantExperience,
                 AppliedAt = a.AppliedAt,
                 ReviewedAt = a.ReviewedAt,
@@ -188,11 +189,11 @@ namespace Together.Services
                     ExpiryDate = certificate.ExpiryDate,
                     Description = certificate.Description,
                     ImageUrl = certificate.ImageUrl,
-                    Status = certificate.Status,
-                    StatusName = certificate.Status.ToString(),
-                    CreatedAt = certificate.CreatedAt,
-                    VerifiedAt = certificate.VerifiedAt,
-                    VerifiedByAdminId = certificate.VerifiedByAdminId
+                    //Status = certificate.Status,
+                    //StatusName = certificate.Status.ToString(),
+                    //CreatedAt = certificate.CreatedAt,
+                    //VerifiedAt = certificate.VerifiedAt,
+                    //VerifiedByAdminId = certificate.VerifiedByAdminId
                 }).ToList() 
             };
         }

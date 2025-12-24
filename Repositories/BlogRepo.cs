@@ -34,7 +34,8 @@ namespace Together.Repositories
 
             if (!string.IsNullOrEmpty(dto.Title))
             {
-                query = query.Where(s => s.Title.Contains(dto.Title));
+                var title = dto.Title.Trim().ToLower();
+                query = query.Where(s => s.Title.ToLower().Contains(title));
             }
             if (dto.AuthorId.HasValue)
             {

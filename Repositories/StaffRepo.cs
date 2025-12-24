@@ -45,14 +45,19 @@ namespace Together.Repositories
             IQueryable<Staff> query = WithIncludes();
 
             if (!string.IsNullOrEmpty(dto.Name))
-                query = query.Where(s => s.Account.Name.Contains(dto.Name));
+            {
+                var name = dto.Name.ToLower();
+                query = query.Where(s => s.Account.Name.ToLower().Contains(name));
 
+            }
             if (!string.IsNullOrEmpty(dto.Email))
+            {
                 query = query.Where(s => s.Account.Email.Contains(dto.Email));
-
+            }
             if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            {
                 query = query.Where(s => s.Account.PhoneNumber.Contains(dto.PhoneNumber));
-
+            }
             if (dto.OrganizationId.HasValue)
                 query = query.Where(s => s.OrganizationId == dto.OrganizationId.Value);
 

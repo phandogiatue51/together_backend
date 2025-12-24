@@ -227,9 +227,9 @@ namespace Together.Services
                 Bio = account.Bio,
                 ProfileImageUrl = account.ProfileImageUrl,
                 Role = (AccountRole)account.Role,
-                RoleName = account.Role.ToString(),
+                RoleName = account.Role.ToFriendlyName(),
                 Status = (AccountStatus)account.Status,
-                StatusName = account.Status.ToString()
+                StatusName = account.Status.ToFriendlyName()
             };
         }
     }

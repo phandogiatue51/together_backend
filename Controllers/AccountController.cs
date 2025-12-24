@@ -20,7 +20,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewUserDto>>> GetAllUsers()
         {
             var result = await _accountService.GetAllAccounts();
-            return Ok(result);
+            return result;
         }
 
         [HttpGet("{id}")]
@@ -31,7 +31,7 @@ namespace Together.Controllers
             {
                 return NotFound("User not found.");
             }
-            return Ok(result);
+            return result;
         }
 
         [HttpPost("sign-up")]
@@ -108,7 +108,7 @@ namespace Together.Controllers
             };
 
             var result = await _accountService.GetAccountsByFilter(filter);
-            return Ok(result);
+            return result;
         }
     }
 }

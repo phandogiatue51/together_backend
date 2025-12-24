@@ -19,7 +19,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewStaffDto>>> GetAllStaff()
         {
             var staffs = await _staffService.GetAllStaff();
-            return Ok(staffs);
+            return staffs;
         }
 
         [HttpGet("{id}")]
@@ -28,14 +28,14 @@ namespace Together.Controllers
             var staff = await _staffService.GetStaffById(id);
             if (staff == null)
                 return NotFound();
-            return Ok(staff);
+            return staff;
         }
 
         [HttpGet("organization/{organId}")]
         public async Task<ActionResult<List<ViewStaffDto>>> GetStaffByOrganId(int organId)
         {
             var staffs = await _staffService.GetStaffByOrganId(organId);
-            return Ok(staffs);
+            return staffs;
         }
 
         [HttpPost]
@@ -92,7 +92,7 @@ namespace Together.Controllers
                 IsActive = IsActive
             };
             var staffs = await _staffService.GetStaffByFilterAsync(dto);
-            return Ok(staffs);
+            return staffs;
         }
     }
 }

@@ -34,7 +34,8 @@ namespace Together.Repositories
             var query = WithIncludes().AsQueryable();
             if (!string.IsNullOrEmpty(dto.Title))
             {
-                query = query.Where(p => p.Title.Contains(dto.Title));
+                var title = dto.Title.ToLower();
+                query = query.Where(p => p.Title.ToLower() == title);
             };
             if (dto.StartDate.HasValue)
             {
@@ -46,7 +47,8 @@ namespace Together.Repositories
             };
             if (!string.IsNullOrEmpty(dto.Location))
             {
-                query = query.Where(p => p.Location != null && p.Location.Contains(dto.Location));
+                var location = dto.Location.ToLower();
+                query = query.Where(p => p.Location.ToLower() == location);
             };
             if (dto.RequiredVolunteers.HasValue)
             {

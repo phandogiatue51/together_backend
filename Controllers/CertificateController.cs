@@ -22,7 +22,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewCertiDto>>> GetAllCertis()
         {
             var certis = await _certificateService.GetAllCertificatesAsync();
-            return Ok(certis);
+            return certis;
         }
 
         [HttpGet("{id}")]
@@ -31,7 +31,7 @@ namespace Together.Controllers
             var certis = await _certificateService.GetCertificateByIdAsync(id);
             if (certis == null)
                 return NotFound();
-            return Ok(certis);
+            return certis;
         }
 
         [HttpGet("account/{accountId}")]
@@ -101,7 +101,7 @@ namespace Together.Controllers
             };
           
             var certis = await _certificateService.FilterCertificatesAsync(filter);
-            return Ok(certis);
+            return certis;
         }
     }
 }

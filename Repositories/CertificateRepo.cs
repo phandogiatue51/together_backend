@@ -53,7 +53,10 @@ namespace Together.Repositories
             if (filterDto.CategoryId.HasValue)
                 query = query.Where(c => c.CategoryId == filterDto.CategoryId.Value);
             if (!string.IsNullOrEmpty(filterDto.CertificateName))
-                query = query.Where(c => c.CertificateName.Contains(filterDto.CertificateName));
+            {
+                var nameFilter = filterDto.CertificateName.Trim().ToLower();
+                query = query.Where(c => c.CertificateName.ToLower().Contains(nameFilter));
+            }
             if (filterDto.Status.HasValue)
                 query = query.Where(c => c.Status == filterDto.Status.Value);
 

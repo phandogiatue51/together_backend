@@ -206,11 +206,11 @@ namespace Together.Services
                 Address = organization.Address,
                 LogoUrl = organization.LogoUrl,
                 Type = organization.Type,
-                TypeName = organization.Type.ToString(),
+                TypeName = organization.Type.ToFriendlyName(),
                 Status = organization.Status,
-                StatusName = organization.Status.ToString(),
+                StatusName = organization.Status.ToFriendlyName(),
                 RejectionReason = organization.RejectionReason
             };
         }
     }
-}
+}   

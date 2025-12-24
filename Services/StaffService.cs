@@ -172,7 +172,7 @@ namespace Together.Services
                 AccountId = staff.AccountId,
                 Name = staff.Account?.Name ?? string.Empty, 
                 Email = staff.Account?.Email ?? string.Empty,
-                StaffRole = staff.Role.ToString(), 
+                StaffRole = staff.Role.ToFriendlyName(), 
                 JoinedDate = staff.JoinedAt 
             };
         }

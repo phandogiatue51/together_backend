@@ -67,8 +67,6 @@ namespace Together.Services
                     ExpiryDate = dto.ExpiryDate,
                     Description = dto.Description,
                     ImageUrl = imageUrl,
-                    Status = CertificateStatus.Pending,
-                    CreatedAt = DateTime.UtcNow
                 };
 
                 await _certificateRepo.AddAsync(certificate);
@@ -222,11 +220,11 @@ namespace Together.Services
                 ExpiryDate = certificate.ExpiryDate,
                 Description = certificate.Description,
                 ImageUrl = certificate.ImageUrl,
-                Status = certificate.Status,
-                StatusName = certificate.Status.ToString(),
-                CreatedAt = certificate.CreatedAt,
-                VerifiedAt = certificate.VerifiedAt,
-                VerifiedByAdminId = certificate.VerifiedByAdminId
+                //Status = certificate.Status,
+                //StatusName = certificate.Status.ToString(),
+                //CreatedAt = certificate.CreatedAt,
+                //VerifiedAt = certificate.VerifiedAt,
+                //VerifiedByAdminId = certificate.VerifiedByAdminId
             };
         }
     }

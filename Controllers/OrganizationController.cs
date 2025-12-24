@@ -9,11 +9,11 @@ namespace Together.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrganController : ControllerBase
+    public class OrganizationController : ControllerBase
     {
         private readonly OrganizationService _organService;
 
-        public OrganController(OrganizationService organService)
+        public OrganizationController(OrganizationService organService)
         {
             _organService = organService;
         }
@@ -22,7 +22,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewOrganDto>>> GetAllOrgans()
         {
             var organs = await _organService.GetAllOrgans();
-            return Ok(organs);
+            return organs;
         }
 
         [HttpGet("{id}")]
@@ -31,7 +31,7 @@ namespace Together.Controllers
             var organ = await _organService.GetOrganById(id);
             if (organ == null)
                 return NotFound();
-            return Ok(organ);
+            return organ;
         }
 
         [HttpPost]
@@ -111,7 +111,7 @@ namespace Together.Controllers
                 Status = status
             };
             var organs = await _organService.GetOrgansByFilter(filter);
-            return Ok(organs);
+            return organs;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Together.Controllers
         public async Task<ActionResult<List<ViewCateDto>>> GetAllCategories()
         {
             var categories = await _cateService.GetAllCategoriesAsync();
-            return Ok(categories);
+            return categories;
         }
     }
 }
