@@ -7,10 +7,16 @@ namespace Together.Services
     public class CategoryService
     {
         private readonly CategoryRepo _cateRepo;
-        public CategoryService(CategoryRepo cateRepo)
+        private readonly CertificateRepo _certificateRepo;
+        private readonly ProjectRepo _projectRepo;
+
+        public CategoryService(CategoryRepo cateRepo, CertificateRepo certificateRepo, ProjectRepo projectRepo)
         {
             _cateRepo = cateRepo;
+            _certificateRepo = certificateRepo;
+            _projectRepo = projectRepo;
         }
+
         public async Task<List<ViewCateDto>> GetAllCategoriesAsync()
         {
             var categories = await _cateRepo.GetActiveCategoriesAsync();
@@ -25,6 +31,19 @@ namespace Together.Services
                 CreatedAt = categories.CreatedAt,
                 UpdatedAt = categories.UpdatedAt
             }).ToList();
+        }
+
+        public async Task<List<CategoryPopularityDto>> GetSkillSuggestions(int accountId)
+        {
+            var volunteerCerts = await _certificateRepo.GetByAccountIdAsync(accountId);
+            var volunteerCategoryIds = volunteerCerts.Select(c => c.CategoryId).Distinct().ToList();
+
+            var popularCategories = await _cateRepo.GetPopularCategoriesWithStatsAsync(
+                count: 3,
+                excludeIds: volunteerCategoryIds
+            );
+
+            return popularCategories;
         }
     }
 }

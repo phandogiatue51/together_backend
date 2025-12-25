@@ -11,13 +11,16 @@ namespace Together.Services
         private readonly AccountRepo _accountRepo;
         private readonly CategoryRepo _categoryRepo;
         private readonly CloudinaryService _imageStorageService;
+        private readonly ProjectRepo _projectRepo;
 
-        public CertificateService(CertificateRepo certificateRepo, AccountRepo accountRepo, CategoryRepo categoryRepo, CloudinaryService imageStorageService)
+        public CertificateService(CertificateRepo certificateRepo, AccountRepo accountRepo, CategoryRepo categoryRepo, 
+            CloudinaryService imageStorageService, ProjectRepo projectRepo)
         {
             _certificateRepo = certificateRepo;
             _accountRepo = accountRepo;
             _categoryRepo = categoryRepo;
             _imageStorageService = imageStorageService;
+            _projectRepo = projectRepo;
         }
 
         public async Task<List<ViewCertiDto>> GetAllCertificatesAsync()
@@ -203,7 +206,6 @@ namespace Together.Services
             var certificates = await _certificateRepo.GetFilteredAsync(filterDto);
             return certificates.Select(c => MapToViewCertiDto(c)).ToList();
         }
-
 
         private ViewCertiDto MapToViewCertiDto(Certificate certificate)
         {

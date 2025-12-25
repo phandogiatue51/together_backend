@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Pro;
 using Together.Models;
+using Together.Repositories;
 using Together.Services;
 
 namespace Together.Controllers
@@ -10,10 +11,12 @@ namespace Together.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly ProjectService _projectService;
+        private readonly CategoryService _categoryService;
 
-        public ProjectsController(ProjectService projectService)
+        public ProjectsController(ProjectService projectService, CategoryService categoryService)
         {
             _projectService = projectService;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
@@ -83,7 +86,9 @@ namespace Together.Controllers
             [FromQuery] ProjectStatus? Status,
             [FromQuery] int? RequiredVolunteers,
             [FromQuery] int? CurrentVolunteers,
-            [FromQuery] DateTime? CreatedAt)
+            [FromQuery] DateTime? CreatedAt,
+            [FromQuery] int? organizationId,
+            [FromQuery] List<int>? categoryIds)
         {
             var filter = new ProjectFilterDto
             {
@@ -95,10 +100,43 @@ namespace Together.Controllers
                 Status = Status,
                 RequiredVolunteers = RequiredVolunteers,
                 CurrentVolunteers = CurrentVolunteers,
-                CreatedAt = CreatedAt
+                CreatedAt = CreatedAt,
+                OrganizationId = organizationId,
+                CategoryIds = categoryIds ?? new List<int>()  
             };
             var projects = await _projectService.GetProjectsByFilter(filter);
             return projects;
         }
+
+        [HttpGet("matched-projects/{accountId}")]
+        public async Task<ActionResult<List<ViewMatchedProjectDto>>> GetMatchedProjects(int accountId, [FromQuery] string? location)
+        {
+            try
+            {
+                var matchedProjects = await _projectService.GetMatchedProject(accountId, location);
+
+                if (!matchedProjects.Any())
+                {
+                    return Ok(new
+                    {
+                        Message = "No matching projects found. Consider adding more certificates to your profile.",
+                        Suggestions = await _categoryService.GetSkillSuggestions(accountId)
+                    });
+                }
+
+                return Ok(new
+                {
+                    TotalMatches = matchedProjects.Count,
+                    PerfectMatches = matchedProjects.Count(p => p.MatchPercentage >= 80),
+                    Projects = matchedProjects
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error finding matches: {ex.Message}");
+            }
+        }
+
+        
     }
 }

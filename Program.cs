@@ -108,6 +108,7 @@ builder.Services.AddScoped<CertificateService>();
 builder.Services.AddScoped<ApplicationService>();
 
 builder.Services.AddScoped<PasswordHelper>();
+builder.Services.AddScoped<CalculateScore>();
 
 var app = builder.Build();
 

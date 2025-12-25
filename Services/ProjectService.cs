@@ -1,4 +1,5 @@
-﻿using Together.DTOs.Pro;
+﻿using Together.DTOs;
+using Together.DTOs.Pro;
 using Together.Helpers;
 using Together.Models;
 using Together.Repositories;
@@ -11,13 +12,18 @@ namespace Together.Services
         private readonly CategoryRepo _categoryRepo;
         private readonly OrganizationRepo _organRepo;
         private readonly CloudinaryService _imageStorageService;
+        private readonly CertificateRepo _certificateRepo;
+        private readonly CalculateScore _calculateScore;
 
-        public ProjectService(ProjectRepo projectRepo, CategoryRepo categoryRepo, OrganizationRepo organRepo, CloudinaryService imageStorageService)
+        public ProjectService(ProjectRepo projectRepo, CategoryRepo categoryRepo, OrganizationRepo organRepo, 
+            CloudinaryService imageStorageService, CertificateRepo certificateRepo, CalculateScore calculateScore)
         {
             _projectRepo = projectRepo;
             _categoryRepo = categoryRepo;
             _organRepo = organRepo;
             _imageStorageService = imageStorageService;
+            _certificateRepo = certificateRepo;
+            _calculateScore = calculateScore;
         }
 
         public async Task<List<ViewProjectDto>> GetAllProjects()
@@ -200,6 +206,80 @@ namespace Together.Services
 
             await _projectRepo.DeleteAsync(project);
             return (true, "Project deleted successfully.");
+        }
+
+        public async Task<List<ViewMatchedProjectDto>> GetMatchedProject(int accountId, string? location)
+        {
+            var certificates = await _certificateRepo.GetByAccountIdAsync(accountId);
+
+            if (!certificates.Any())
+                return new List<ViewMatchedProjectDto>(); 
+
+            var certificateCategoryIds = certificates
+                .Select(c => c.CategoryId)
+                .Distinct()
+                .ToList();
+
+            var filter = new ProjectFilterDto
+            {
+                Status = ProjectStatus.Recruiting, 
+                CategoryIds = certificateCategoryIds 
+            };
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                filter.Location = location;
+            }
+
+            var projects = await _projectRepo.GetByFilterAsync(filter);
+
+            var matchedProjects = projects
+                .Select(project => new
+                {
+                    Project = project,
+                    MatchScore = _calculateScore.CalculateMatchScore(project, certificates, certificateCategoryIds),
+                    MatchingCategories = _calculateScore.GetMatchingCategories(project, certificateCategoryIds)
+                })
+                .Where(result => result.MatchScore > 0) 
+                .OrderByDescending(result => result.MatchScore) 
+                .ToList();
+
+            var result = matchedProjects.Select(mp => new ViewMatchedProjectDto
+            {
+                Id = mp.Project.Id,
+                Title = mp.Project.Title,
+                Description = mp.Project.Description,
+                Type = mp.Project.Type,
+                TypeName = mp.Project.Type.ToFriendlyName(), 
+                StartDate = mp.Project.StartDate,
+                EndDate = mp.Project.EndDate,
+                Location = mp.Project.Location,
+                ImageUrl = mp.Project.ImageUrl,
+                OrganizationId = mp.Project.OrganizationId,
+                OrganizationName = mp.Project.Organization?.Name,
+                Status = mp.Project.Status,
+                StatusName = mp.Project.Status.ToFriendlyName(), 
+                RequiredVolunteers = mp.Project.RequiredVolunteers,
+                CurrentVolunteers = mp.Project.CurrentVolunteers,
+                CreatedAt = mp.Project.CreatedAt,
+                UpdatedAt = mp.Project.UpdatedAt,
+
+                Categories = mp.Project.Categories?.Select(pc => new ProjectCategoryDto
+                {
+                    CategoryId = pc.CategoryId,
+                    CategoryName = pc.Category?.Name ?? "Unknown",
+                    CategoryIcon = pc.Category?.Icon,
+                    CategoryColor = pc.Category?.Color
+                }).ToList() ?? new List<ProjectCategoryDto>(),
+
+
+                MatchPercentage = mp.MatchScore,
+                MatchingSkillCount = mp.MatchingCategories.Count,
+                MatchingSkills = mp.MatchingCategories,
+                MatchExplanation = _calculateScore.GenerateMatchExplanation(mp.Project, mp.MatchingCategories, mp.MatchScore)
+            }).ToList();
+
+            return result;
         }
 
         private ViewProjectDto MapToViewProjectDto(Project project)
