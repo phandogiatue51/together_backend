@@ -36,7 +36,6 @@ namespace Together.Helpers
             return role
                 switch
             {
-                AccountRole.User => "Người dùng",
                 AccountRole.Volunteer => "Tình nguyện viên",
                 AccountRole.Staff => "Nhân viên tổ chức",
                 AccountRole.Admin => "Quản trị viên",
@@ -50,8 +49,7 @@ namespace Together.Helpers
                 switch
             {
                 AccountStatus.Active => "Đang hoạt động",
-                AccountStatus.Inactive => "Không hoạt động",
-                AccountStatus.Banned => "Buộc ngừng hoạt động",
+                AccountStatus.Inactive => "Ngừng hoạt động",
                 _ => status.ToString()
             };
         }
@@ -74,9 +72,8 @@ namespace Together.Helpers
             return role switch
             {
                 StaffRole.Manager => "Quản lý",
-                StaffRole.Coordinator => "Điều phối viên",
                 StaffRole.Reviewer => "Người đánh giá",
-                StaffRole.VolunteerManager => "Quản lý tình nguyện viên",
+                StaffRole.Employee => "Nhân viên",
                 _ => role.ToString()
             };
         }
@@ -107,6 +104,18 @@ namespace Together.Helpers
                 ProjectType.Counseling => "Tư vấn",
                 ProjectType.Other => "Khác",
                 _ => type.ToString()
+            };
+        }
+
+        public static string ToFriendlyName(this BlogStatus status)
+        {
+            return status switch
+            {
+                BlogStatus.Draft => "Bản nháp",
+                BlogStatus.Pending => "Đang chờ duyệt",
+                BlogStatus.Published => "Đang xuất bản",
+                BlogStatus.Archived => "Lưu trữ",
+                _ => status.ToString()
             };
         }
     }

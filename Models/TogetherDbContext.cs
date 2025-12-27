@@ -77,11 +77,6 @@ namespace Together.Models
                 .HasConversion<string>()
                 .HasMaxLength(20);
 
-            modelBuilder.Entity<Certificate>()
-                .Property(c => c.Status)
-                .HasConversion<string>()
-                .HasMaxLength(20);
-
             modelBuilder.Entity<VolunteerApplication>()
                 .Property(va => va.Status)
                 .HasConversion<string>()
@@ -111,6 +106,11 @@ namespace Together.Models
                     j => j.HasOne<Certificate>().WithMany().HasForeignKey("CertificateId"),
                     j => j.HasOne<VolunteerApplication>().WithMany().HasForeignKey("ApplicationId")
                 );
+
+            modelBuilder.Entity<BlogPost>()
+                .Property(b => b.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
 
         }
     }

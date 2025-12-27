@@ -17,5 +17,6 @@ namespace Together.DTOs.Organ
         public OrganzationStatus Status { get; set; }
         public string? StatusName { get; set; }
         public string? RejectionReason { get; set; }
+        public DateTime CreateAt { get; set; }
     }
 }

@@ -13,7 +13,6 @@ namespace Together.Repositories
             return await _dbSet
                 .Include(c => c.Account)
                 .Include(c => c.Category)
-                .Include(c => c.VerifiedByAdmin)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
         }
@@ -23,7 +22,6 @@ namespace Together.Repositories
             return await _dbSet
                 .Include(c => c.Account)
                 .Include(c => c.Category)
-                .Include(c => c.VerifiedByAdmin)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -31,7 +29,6 @@ namespace Together.Repositories
         {
             return await _dbSet
                 .Include(c => c.Category)
-                .Include(c => c.VerifiedByAdmin)
                 .Where(c => c.AccountId == accountId)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
@@ -57,8 +54,6 @@ namespace Together.Repositories
                 var nameFilter = filterDto.CertificateName.Trim().ToLower();
                 query = query.Where(c => c.CertificateName.ToLower().Contains(nameFilter));
             }
-            if (filterDto.Status.HasValue)
-                query = query.Where(c => c.Status == filterDto.Status.Value);
 
             return await query.ToListAsync();
         }

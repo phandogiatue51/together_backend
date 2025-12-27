@@ -1,4 +1,6 @@
-﻿namespace Together.DTOs.Blog
+﻿using Together.Models;
+
+namespace Together.DTOs.Blog
 {
     public class ViewBlogDto
     {
@@ -27,6 +29,7 @@
         public string? OrganizationName { get; set; }
         public DateTime PublishedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public bool Status { get; set; }
+        public BlogStatus Status { get; set; }
+        public string? StatusName { get; set; }
     }
 }

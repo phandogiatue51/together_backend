@@ -127,9 +127,6 @@ namespace Together.Services
             if (user.Status == AccountStatus.Inactive)
                 return (false, "Account is inactive. Please contact support.", null, default(AccountRole));
 
-            if (user.Status == AccountStatus.Banned)
-                return (false, "Account is banned. Please contact support.", null, default(AccountRole));
-
             if (!_passwordHelper.VerifyPassword(dto.Password, user.PasswordHash))
                 return (false, "Wrong password", null, default(AccountRole));
 

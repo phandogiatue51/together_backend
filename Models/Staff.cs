@@ -6,9 +6,8 @@ namespace Together.Models
     public enum StaffRole
     {
         Manager,       
-        Coordinator,    
-        Reviewer,       
-        VolunteerManager 
+        Reviewer,
+        Employee
     }
 
     public class Staff
@@ -24,7 +23,7 @@ namespace Together.Models
         public int AccountId { get; set; }
 
         [Required]
-        public StaffRole Role { get; set; } = StaffRole.Coordinator;
+        public StaffRole Role { get; set; } = StaffRole.Employee;
 
         public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LeftAt { get; set; }

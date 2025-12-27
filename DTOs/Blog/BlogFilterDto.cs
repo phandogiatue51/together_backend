@@ -1,4 +1,6 @@
-﻿namespace Together.DTOs.Blog
+﻿using Together.Models;
+
+namespace Together.DTOs.Blog
 {
     public class BlogFilterDto
     {
@@ -6,6 +8,6 @@
         public int? AuthorId { get; set; }
         public int? OrganizationId { get; set; }
         public DateTime? PublishDate { get; set; }
-        public bool? Status { get; set; }
+        public BlogStatus? Status { get; set; }
     }
 }

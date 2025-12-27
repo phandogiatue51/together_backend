@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Together.Models
 {
+    public enum BlogStatus
+    {
+        Draft,
+        Pending,
+        Published,
+        Archived
+    }
+
     public class BlogPost
     {
         [Key]
@@ -41,6 +49,6 @@ namespace Together.Models
 
         public DateTime PublishedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
-        public bool Status { get; set; } = true;
+        public BlogStatus Status { get; set; } = BlogStatus.Draft;
     }
 }

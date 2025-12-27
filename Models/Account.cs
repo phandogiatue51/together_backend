@@ -5,7 +5,6 @@ namespace Together.Models
 {
     public enum AccountRole
     {
-        User,        
         Volunteer,  
         Staff,       
         Admin       
@@ -14,8 +13,7 @@ namespace Together.Models
     public enum AccountStatus
     {
         Active,
-        Inactive,
-        Banned
+        Inactive
     }
 
     public class Account
@@ -48,7 +46,7 @@ namespace Together.Models
         public DateOnly? DateOfBirth { get; set; }
 
         [Required]
-        public AccountRole Role { get; set; } = AccountRole.User;
+        public AccountRole Role { get; set; } = AccountRole.Volunteer;
 
         [Required]
         public AccountStatus Status { get; set; } = AccountStatus.Active;

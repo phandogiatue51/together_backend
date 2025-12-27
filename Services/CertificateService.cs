@@ -89,9 +89,6 @@ namespace Together.Services
                 if (certificate == null)
                     return (false, "Certificate not found.");
 
-                if (certificate.Status != CertificateStatus.Pending)
-                    return (false, "Only pending certificates can be updated.");
-
                 var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
                 if (category == null || !category.IsActive)
                     return (false, "Category not found or inactive.");
@@ -110,50 +107,12 @@ namespace Together.Services
                         certificate.ImageUrl, imageFile);
                 }
 
-                certificate.Status = CertificateStatus.Pending;
-                certificate.VerifiedAt = null;
-                certificate.VerifiedByAdminId = null;
-
                 await _certificateRepo.UpdateAsync(certificate);
                 return (true, "Certificate updated successfully. Awaiting re-verification.");
             }
             catch (Exception ex)
             {
                 return (false, $"Error updating certificate: {ex.Message}");
-            }
-        }
-
-        public async Task<(bool Success, string Message)> VerifyCertificateAsync(int certificateId, int adminId, bool isVerified, string? rejectionReason = null)
-        {
-            try
-            {
-                var certificate = await _certificateRepo.GetByIdAsync(certificateId);
-                if (certificate == null)
-                    return (false, "Certificate not found.");
-
-                var admin = await _accountRepo.GetByIdAsync(adminId);
-                if (admin == null || admin.Role != AccountRole.Admin)
-                    return (false, "You don't have permission!");
-
-                if (isVerified)
-                {
-                    certificate.Status = CertificateStatus.Verified;
-                    certificate.VerifiedAt = DateTime.UtcNow;
-                    certificate.VerifiedByAdminId = adminId;
-                }
-                else
-                {
-                    certificate.Status = CertificateStatus.Rejected;
-                    certificate.VerifiedAt = DateTime.UtcNow;
-                    certificate.VerifiedByAdminId = adminId;
-                }
-
-                await _certificateRepo.UpdateAsync(certificate);
-                return (true, $"Certificate {(isVerified ? "verified" : "rejected")} successfully.");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Error verifying certificate: {ex.Message}");
             }
         }
 
@@ -176,28 +135,6 @@ namespace Together.Services
             catch (Exception ex)
             {
                 return (false, $"Error deleting certificate: {ex.Message}");
-            }
-        }
-
-        public async Task<(bool Success, string Message)> VerifyCertificateAsync(int id, VerifyCertiDto dto)
-        {
-            try
-            {
-                var certificate = await _certificateRepo.GetByIdAsync(id);
-                if (certificate == null)
-                    return (false, "Certificate not found.");
-                var admin = await _accountRepo.GetByIdAsync(dto.AdminId);
-                if (admin == null || admin.Role != AccountRole.Admin)
-                    return (false, "You don't have permission!");
-                certificate.Status = dto.Status;
-                certificate.VerifiedAt = DateTime.UtcNow;
-                certificate.VerifiedByAdminId = dto.AdminId;
-                await _certificateRepo.UpdateAsync(certificate);
-                return (true, "Certificate verification status updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Error verifying certificate: {ex.Message}");
             }
         }
 

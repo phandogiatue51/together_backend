@@ -1,4 +1,6 @@
-﻿namespace Together.DTOs.Blog
+﻿using Together.Models;
+
+namespace Together.DTOs.Blog
 {
     public class UpdateBlogDto
     {
@@ -26,6 +28,6 @@
         public string? Paragraph4 { get; set; }
         public string? Paragraph5 { get; set; }
 
-        public bool? Status { get; set; }
+        public BlogStatus? Status { get; set; }
     }
 }

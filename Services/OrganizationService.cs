@@ -209,7 +209,8 @@ namespace Together.Services
                 TypeName = organization.Type.ToFriendlyName(),
                 Status = organization.Status,
                 StatusName = organization.Status.ToFriendlyName(),
-                RejectionReason = organization.RejectionReason
+                RejectionReason = organization.RejectionReason,
+                CreateAt = organization.CreatedAt
             };
         }
     }

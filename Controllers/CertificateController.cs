@@ -76,28 +76,17 @@ namespace Together.Controllers
             return Ok(result.Message);
         }
 
-        [HttpPost("{id}/verify")]
-        public async Task<ActionResult> VerifyCerti(int id, [FromBody] VerifyCertiDto dto)
-        {
-            var result = await _certificateService.VerifyCertificateAsync(id, dto);
-            if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
-        }
-
         [HttpGet("filter")]
         public async Task<ActionResult<List<ViewCertiDto>>> FilterCertis(
             [FromQuery] int? accountId = null,
             [FromQuery] int? categoryId = null,
-            [FromQuery] string? certificateName = null,
-            [FromQuery] CertificateStatus? status = null)
+            [FromQuery] string? certificateName = null)
         {
             var filter = new CertiFilterDto
             {
                 AccountId = accountId,
                 CategoryId = categoryId,
                 CertificateName = certificateName,
-                Status = status
             };
           
             var certis = await _certificateService.FilterCertificatesAsync(filter);

@@ -3,14 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Together.Models
 {
-    public enum CertificateStatus
-    {
-        Pending,
-        Verified,
-        Rejected,
-        Expired
-    }
-
     public class Certificate
     {
         [Key]
@@ -42,19 +34,10 @@ namespace Together.Models
         [Required]
         public string ImageUrl { get; set; } = string.Empty; 
 
-        [Required]
-        public CertificateStatus Status { get; set; } = CertificateStatus.Pending;
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? VerifiedAt { get; set; }
-
-        public int? VerifiedByAdminId { get; set; }
 
         [ForeignKey("AccountId")]
         public virtual Account Account { get; set; } = null!;
-
-        [ForeignKey("VerifiedByAdminId")]
-        public virtual Account? VerifiedByAdmin { get; set; }
 
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; } = null!;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Blog;
+using Together.Models;
 using Together.Services;
 
 namespace Together.Controllers
@@ -64,7 +65,7 @@ namespace Together.Controllers
             [FromQuery] int? AuthorId,
             [FromQuery] int? OrganizationId,
             [FromQuery] DateTime? PublishDate,
-            [FromQuery] bool? Status)
+            [FromQuery] BlogStatus? Status)
         {
             var filter = new BlogFilterDto
             {

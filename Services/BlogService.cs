@@ -88,7 +88,7 @@ namespace Together.Services
                     OrganizationId = dto.OrganizationId,
 
                     PublishedDate = DateTime.UtcNow,
-                    Status = true
+                    Status = BlogStatus.Pending
                 };
 
                 await _blogRepo.AddAsync(blog);
@@ -175,7 +175,7 @@ namespace Together.Services
                 if (dto.Paragraph4 != null) blog.Paragraph4 = dto.Paragraph4;
                 if (dto.Paragraph5 != null) blog.Paragraph5 = dto.Paragraph5;
 
-                if (dto.Status.HasValue) blog.Status = dto.Status.Value;
+                if (dto.Status.HasValue) blog.Status = (BlogStatus)dto.Status;
 
                 blog.UpdatedDate = DateTime.UtcNow;
 
@@ -315,7 +315,8 @@ namespace Together.Services
                 OrganizationName = blog.Organization?.Name,
                 PublishedDate = blog.PublishedDate,
                 UpdatedDate = blog.UpdatedDate,
-                Status = blog.Status
+                Status = blog.Status,
+                StatusName = blog.Status.ToFriendlyName()
             };
         }
     }
