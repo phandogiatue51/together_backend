@@ -60,7 +60,7 @@ namespace Together.Services
 
                 int accountId;
 
-                var accountResult = await _accountService.CreateAccount(dto.NewAccount, AccountRole.Staff);
+                var accountResult = await _accountService.CreateAccount(dto.NewAccount, AccountRole.Staff, dto.NewAccount.ImageUrl);
 
                 if (!accountResult.Success)
                     return (false, $"Failed to create account: {accountResult.Message}", null);
@@ -168,12 +168,17 @@ namespace Together.Services
             {
                 Id = staff.Id,
                 OrganizationId = staff.OrganizationId,
-                OrganizationName = staff.Organization?.Name, 
+                OrganizationName = staff.Organization?.Name,
                 AccountId = staff.AccountId,
-                Name = staff.Account?.Name ?? string.Empty, 
+                Name = staff.Account?.Name ?? string.Empty,
                 Email = staff.Account?.Email ?? string.Empty,
-                StaffRole = staff.Role.ToFriendlyName(), 
-                JoinedDate = staff.JoinedAt 
+                PhoneNumber = staff.Account?.PhoneNumber ?? string.Empty,
+                ProfileImageUrl = staff.Account?.ProfileImageUrl,
+                Role = staff.Role,
+                StaffRole = staff.Role.ToFriendlyName(),
+                IsActive = staff.IsActive,
+                JoinedDate = staff.JoinedAt,
+                LeftDate = staff.LeftAt
             };
         }
     }

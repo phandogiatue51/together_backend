@@ -14,5 +14,6 @@ namespace Together.DTOs.User
         public string? PhoneNumber { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public bool? IsFemale { get; set; }
+        public IFormFile? ImageUrl { get; set; } = null;
     }
 }

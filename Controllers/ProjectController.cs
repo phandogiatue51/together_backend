@@ -84,8 +84,6 @@ namespace Together.Controllers
             [FromQuery] DateTime? EndDate,
             [FromQuery] string? Location,
             [FromQuery] ProjectStatus? Status,
-            [FromQuery] int? RequiredVolunteers,
-            [FromQuery] int? CurrentVolunteers,
             [FromQuery] DateTime? CreatedAt,
             [FromQuery] int? organizationId,
             [FromQuery] List<int>? categoryIds)
@@ -98,8 +96,6 @@ namespace Together.Controllers
                 EndDate = EndDate,
                 Location = Location,
                 Status = Status,
-                RequiredVolunteers = RequiredVolunteers,
-                CurrentVolunteers = CurrentVolunteers,
                 CreatedAt = CreatedAt,
                 OrganizationId = organizationId,
                 CategoryIds = categoryIds ?? new List<int>()  

@@ -54,14 +54,6 @@ namespace Together.Repositories
             {
                 query = query.Where(p => p.EndDate <= dto.EndDate.Value);
             }
-            if (dto.RequiredVolunteers.HasValue)
-            {
-                query = query.Where(p => p.RequiredVolunteers >= dto.RequiredVolunteers.Value);
-            }
-            if (dto.CurrentVolunteers.HasValue)
-            {
-                query = query.Where(p => p.CurrentVolunteers >= dto.CurrentVolunteers.Value);
-            }
             if (dto.Type.HasValue)
             {
                 query = query.Where(p => p.Type == dto.Type.Value);

@@ -44,7 +44,7 @@ namespace Together.Services
             return MapToViewUserDto(account);
         }
 
-        public async Task<(bool Success, string Message, int AccountId)> CreateAccount(CreateUserDto dto, AccountRole role)
+        public async Task<(bool Success, string Message, int AccountId)> CreateAccount(CreateUserDto dto, AccountRole role, IFormFile? imageFile)
         {
             var existingAccount = await _accountRepo.ExistsAsync(a => a.Email == dto.Email);
             if (existingAccount)
@@ -63,6 +63,11 @@ namespace Together.Services
                 Role = role,
                 Status = AccountStatus.Active
             };
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                account.ProfileImageUrl = await _imageStorageService.UploadImageAsync(imageFile);
+            }
 
             await _accountRepo.AddAsync(account);
             return (true, "Account created successfully!", account.Id);
