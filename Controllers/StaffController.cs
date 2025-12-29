@@ -39,7 +39,7 @@ namespace Together.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateStaff([FromBody] CreateStaffDto dto)
+        public async Task<ActionResult> CreateStaff([FromForm] CreateStaffDto dto)
         {
             var result = await _staffService.CreateStaff(dto);
 
@@ -50,7 +50,7 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateStaff(int id, [FromBody] UpdateStaffDto dto)
+        public async Task<ActionResult> UpdateStaff(int id, [FromForm] UpdateStaffDto dto)
         {
             var result = await _staffService.UpdateStaff(id, dto);
             if (!result.Success)

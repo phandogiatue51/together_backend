@@ -13,6 +13,27 @@ namespace Together.DTOs.Pro
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
+        [MaxLength(1000)]
+        public string? Challenges { get; set; }
+
+        [Required]
+        [MaxLength(1000)]
+        public string Goals { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(1000)]
+        public string Activities { get; set; } = string.Empty;
+
+        [MaxLength(1000)]
+        public string? Impacts { get; set; }
+
+        [MaxLength(1000)]
+        public string? Benefits { get; set; }
+
+        [Required]
+        [MaxLength(1000)]
+        public string Requirements { get; set; } = string.Empty;
+
         [Required]
         public ProjectType Type { get; set; }
 

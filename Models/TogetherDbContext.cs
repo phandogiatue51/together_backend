@@ -111,7 +111,6 @@ namespace Together.Models
                 .Property(b => b.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
-
         }
     }
 }

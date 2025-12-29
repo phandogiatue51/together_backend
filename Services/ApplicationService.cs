@@ -134,9 +134,9 @@ namespace Together.Services
                 return (false, "Application not found!");
 
             var staff = await _staffRepo.GetByIdAsync(dto.ReviewedByStaffId ?? 0);
-            if (staff == null || staff.Role != StaffRole.Reviewer)
+            if (staff == null || staff.Role == StaffRole.Employee)
             {
-                return (false, "Only staff with Reviewer role can review applications.");
+                return (false, "You are not allowed to approve applications.");
             }
 
             if (app.Status != ApplicationStatus.Pending)

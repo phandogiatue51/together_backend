@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Together.Models;
@@ -11,9 +12,11 @@ using Together.Models;
 namespace Together.Migrations
 {
     [DbContext(typeof(TogetherDbContext))]
-    partial class TogetherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229033112_FixBlogPost")]
+    partial class FixBlogPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,19 +339,6 @@ namespace Together.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Activities")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Benefits")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Challenges")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -363,17 +353,8 @@ namespace Together.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Goals")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
-
-                    b.Property<string>("Impacts")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Location")
                         .HasMaxLength(200)
@@ -384,11 +365,6 @@ namespace Together.Migrations
 
                     b.Property<int>("RequiredVolunteers")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Requirements")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");

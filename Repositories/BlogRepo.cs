@@ -30,7 +30,8 @@ namespace Together.Repositories
 
         public async Task<List<BlogPost>> GetByFilterAsync(BlogFilterDto dto)
         {
-            IQueryable<BlogPost> query = WithIncludes();
+            IQueryable<BlogPost> query = WithIncludes()
+                .OrderBy(s => s.Id);
 
             if (!string.IsNullOrEmpty(dto.Title))
             {

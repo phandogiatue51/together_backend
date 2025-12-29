@@ -58,13 +58,19 @@ namespace Together.Services
                 {
                     Title = dto.Title,
                     Description = dto.Description,
+                    Challenges = dto.Challenges,
+                    Goals = dto.Goals,
+                    Activities = dto.Activities,
+                    Impacts = dto.Impacts,
+                    Benefits = dto.Benefits,
+                    Requirements = dto.Requirements,
                     Type = dto.Type,
                     StartDate = dto.StartDate,
                     EndDate = dto.EndDate,
                     Location = dto.Location,
                     OrganizationId = dto.OrganizationId,
                     RequiredVolunteers = dto.RequiredVolunteers,
-                    Status = ProjectStatus.Draft,
+                    Status = ProjectStatus.Planning,
                     CurrentVolunteers = 0,
                     CreatedAt = DateTime.UtcNow
                 }; 
@@ -109,6 +115,12 @@ namespace Together.Services
 
                 project.Title = dto.Title;
                 project.Description = dto.Description;
+                project.Challenges = dto.Challenges;
+                project.Goals = dto.Goals;
+                project.Activities = dto.Activities;
+                project.Impacts = dto.Impacts;
+                project.Benefits = dto.Benefits;
+                project.Requirements = dto.Requirements;
                 project.Type = dto.Type;
                 project.StartDate = dto.StartDate;
                 project.EndDate = dto.EndDate;
@@ -289,6 +301,12 @@ namespace Together.Services
                 Id = project.Id,
                 Title = project.Title,
                 Description = project.Description,
+                Challenges = project.Challenges,
+                Goals = project.Goals,
+                Activities = project.Activities,
+                Impacts = project.Impacts,
+                Benefits = project.Benefits,
+                Requirements = project.Requirements,
                 Type = project.Type,
                 TypeName = project.Type.ToFriendlyName(),
                 StartDate = project.StartDate,

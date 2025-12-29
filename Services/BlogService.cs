@@ -87,7 +87,7 @@ namespace Together.Services
 
                     FeaturedImageUrl = featuredImageUrl,
 
-                    AuthorId = dto.AuthorId,
+                    AuthorId = (int)dto.AuthorId,
                     OrganizationId = dto.OrganizationId,
 
                     PublishedDate = DateTime.UtcNow,

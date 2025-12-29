@@ -37,7 +37,7 @@ namespace Together.Controllers
         [HttpPost("sign-up")]
         public async Task<ActionResult> CreateUser([FromForm] CreateUserDto dto)
         {
-            var result = await _accountService.CreateAccount(dto, Models.AccountRole.Volunteer, dto.ImageUrl);
+            var result = await _accountService.CreateAccount(dto, Models.AccountRole.Volunteer);
             if (!result.Success)
             {
                 return BadRequest(result.Message);

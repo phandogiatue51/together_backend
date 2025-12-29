@@ -7,6 +7,12 @@ namespace Together.DTOs.Pro
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string? Challenges { get; set; }
+        public string Goals { get; set; } = string.Empty;
+        public string Activities { get; set; } = string.Empty;
+        public string? Impacts { get; set; }
+        public string? Benefits { get; set; }
+        public string Requirements { get; set; } = string.Empty;
         public ProjectType Type { get; set; }
         public string? TypeName { get; set; }
         public DateTime? StartDate { get; set; }
