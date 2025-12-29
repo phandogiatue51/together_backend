@@ -11,12 +11,15 @@ namespace Together.Services
         private readonly BlogRepo _blogRepo;
         private readonly CloudinaryService _cloudinaryService;
         private readonly AccountRepo _accountRepo;
+        private readonly StaffRepo _staffRepo;
 
-        public BlogService(BlogRepo blogRepo, CloudinaryService cloudinaryService, AccountRepo accountRepo)
+        public BlogService(BlogRepo blogRepo, CloudinaryService cloudinaryService, 
+            AccountRepo accountRepo, StaffRepo staffRepo)
         {
             _blogRepo = blogRepo;
             _cloudinaryService = cloudinaryService;
             _accountRepo = accountRepo;
+            _staffRepo = staffRepo;
         }
 
         public async Task<List<ViewBlogDto>> GetAllBlogPostsAsync()
@@ -128,18 +131,11 @@ namespace Together.Services
             }
         }
 
-        public async Task<(bool Success, string Message)> UpdateBlog(int blogId, UpdateBlogDto dto, int currentUserId)
+        public async Task<(bool Success, string Message)> UpdateBlog(int blogId, UpdateBlogDto dto)
         {
             var blog = await _blogRepo.GetByIdAsync(blogId);
             if (blog == null)
                 return (false, "Blog not found");
-
-            if (blog.AuthorId != currentUserId)
-            {
-                var currentUser = await _accountRepo.GetByIdAsync(currentUserId);
-                if (currentUser?.Role != AccountRole.Admin)
-                    return (false, "You can only edit your own blogs");
-            }
 
             var imagesToDelete = new List<string>();
 
@@ -249,18 +245,11 @@ namespace Together.Services
             }
         }
 
-        public async Task<(bool Success, string Message)> DeleteBlog(int blogId, int currentUserId)
+        public async Task<(bool Success, string Message)> DeleteBlog(int blogId)
         {
             var blog = await _blogRepo.GetByIdAsync(blogId);
             if (blog == null)
                 return (false, "Blog not found");
-
-            if (blog.AuthorId != currentUserId)
-            {
-                var currentUser = await _accountRepo.GetByIdAsync(currentUserId);
-                if (currentUser?.Role != AccountRole.Admin)
-                    return (false, "You can only delete your own blogs");
-            }
 
             var imagesToDelete = new List<string>
             {
@@ -281,6 +270,24 @@ namespace Together.Services
             catch (Exception ex)
             {
                 return (false, $"Error deleting blog: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> ChangeBlogStatus(int blogId, BlogStatus status)
+        {
+            var blog = await _blogRepo.GetByIdAsync(blogId);
+            if (blog == null)
+                return (false, "Blog not found");
+            blog.Status = status;
+            blog.UpdatedDate = DateTime.UtcNow;
+            try
+            {
+                await _blogRepo.UpdateAsync(blog);
+                return (true, "Blog status updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error updating blog status: {ex.Message}");
             }
         }
 

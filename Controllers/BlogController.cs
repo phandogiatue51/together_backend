@@ -42,18 +42,27 @@ namespace Together.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto dto, int accountId)
+        public async Task<ActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto dto)
         {
-            var result = await _blogService.UpdateBlog(id, dto, accountId);
+            var result = await _blogService.UpdateBlog(id, dto);
             if (!result.Success)
                 return BadRequest(result.Message);
             return Ok(result.Message);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteBlog(int id, int accountId)
+        public async Task<ActionResult> DeleteBlog(int id)
         {
-            var result = await _blogService.DeleteBlog(id, accountId);
+            var result = await _blogService.DeleteBlog(id);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult> ChangeBlogStatus(int id, BlogStatus status)
+        {
+            var result = await _blogService.ChangeBlogStatus(id, status);
             if (!result.Success)
                 return BadRequest(result.Message);
             return Ok(result.Message);
