@@ -231,7 +231,8 @@ namespace Together.Services
                 Role = (AccountRole)account.Role,
                 RoleName = account.Role.ToFriendlyName(),
                 Status = (AccountStatus)account.Status,
-                StatusName = account.Status.ToFriendlyName()
+                StatusName = account.Status.ToFriendlyName(),
+                CreatedAt = account.CreatedAt != null ? DateOnly.FromDateTime(account.CreatedAt) : null
             };
         }
     }

@@ -16,5 +16,6 @@ namespace Together.DTOs.User
         public string? RoleName { get; set; }
         public AccountStatus Status { get; set; }
         public string? StatusName { get; set; }
+        public DateOnly? CreatedAt { get; set; }
     }
 }
