@@ -108,7 +108,7 @@ namespace Together.Services
                 }
 
                 await _certificateRepo.UpdateAsync(certificate);
-                return (true, "Certificate updated successfully. Awaiting re-verification.");
+                return (true, "Certificate updated successfully.");
             }
             catch (Exception ex)
             {
