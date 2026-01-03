@@ -38,32 +38,25 @@ namespace Together.Services
             return MapToViewAppDto(app);
         }
 
-        public async Task<(bool Success, string Message)> CreateApplicationAsync(CreateAppDto dto)
+        public async Task<(bool Success, string Message, int? id)> CreateApplicationAsync(CreateAppDto dto)
         {
             var existing = await _applicationRepo.GetExistingApplicationAsync(dto.ProjectId, dto.VolunteerId);
 
             if (existing != null && (existing.Status == ApplicationStatus.Pending || existing.Status == ApplicationStatus.Approved))
             {
-                return (false, "You have already applied for this project.");
+                return (false, "You have already applied for this project.", null);
             }
 
             var project = await _projectRepo.GetByIdAsync(dto.ProjectId);
             if (project == null)
             {
-                return (false, "Project not found.");
+                return (false, "Project not found.", null);
             }
 
             var volunteer = await _accountRepo.GetByIdAsync(dto.VolunteerId);
             if (volunteer == null)
             {
-                return (false, "Volunteer account not found.");
-            }
-
-            List<Certificate> selectedCertificates = new();
-
-            if (dto.SelectedCertificateIds != null && dto.SelectedCertificateIds.Any())
-            {
-                selectedCertificates = await _certificateRepo.GetCertificatesByIdsAsync(dto.SelectedCertificateIds);
+                return (false, "Volunteer account not found.", null);
             }
 
             var newApp = new VolunteerApplication
@@ -72,11 +65,12 @@ namespace Together.Services
                 VolunteerId = dto.VolunteerId,
                 RelevantExperience = dto.RelevantExperience,
                 AppliedAt = DateTime.UtcNow,
-                SelectedCertificates = selectedCertificates
+                SelectedCertificateId = dto.SelectedCertificateId,
+
             };
 
             await _applicationRepo.AddAsync(newApp);
-            return (true, "Application created successfully.");
+            return (true, "Application created successfully.", newApp.Id);
         }
 
         public async Task<(bool Success, string Message)> UpdateApplicationAsync(int id, UpdateAppDto dto)
@@ -95,18 +89,7 @@ namespace Together.Services
                 app.RelevantExperience = dto.RelevantExperience;
             }
 
-            if (dto.SelectedCertificateIds != null)
-            {
-                List<Certificate> selectedCertificates = new();
-
-                if (dto.SelectedCertificateIds.Any())
-                {
-                    selectedCertificates = await _certificateRepo
-                        .GetCertificatesByIdsAsync(dto.SelectedCertificateIds);
-                }
-
-                app.SelectedCertificates = selectedCertificates;
-            }
+            dto.SelectedCertificateId = app.SelectedCertificateId;
 
             await _applicationRepo.UpdateAsync(app);
             return (true, "Application updated successfully.");
@@ -152,7 +135,13 @@ namespace Together.Services
             {
                 app.RejectionReason = dto.RejectionReason;
             }
+            else
+            {
+                var project = await _projectRepo.GetByIdAsync(app.ProjectId);
+                project.CurrentVolunteers += 1;
+            }
 
+            await _projectRepo.UpdateAsync(app.Project!);
             await _applicationRepo.UpdateAsync(app);
             return (true, "Application reviewed successfully.");
         }
@@ -176,25 +165,18 @@ namespace Together.Services
                 ReviewedByStaffId = a.ReviewedByStaffId,
                 RejectionReason = a.RejectionReason,
                 Feedback = a.Feedback,
-                SelectedCertificates = a.SelectedCertificates.Select(certificate => new ViewCertiDto
+                SelectedCertificate = a.SelectedCertificate != null ? new ViewCertiDto
                 {
-                    Id = certificate.Id,
-                    AccountId = certificate.AccountId,
-                    CertificateName = certificate.CertificateName,
-                    CategoryId = certificate.CategoryId,
-                    CategoryName = certificate.Category?.Name,
-                    IssuingOrganization = certificate.IssuingOrganization,
-                    CertificateNumber = certificate.CertificateNumber,
-                    IssueDate = certificate.IssueDate,
-                    ExpiryDate = certificate.ExpiryDate,
-                    Description = certificate.Description,
-                    ImageUrl = certificate.ImageUrl,
-                    //Status = certificate.Status,
-                    //StatusName = certificate.Status.ToString(),
-                    //CreatedAt = certificate.CreatedAt,
-                    //VerifiedAt = certificate.VerifiedAt,
-                    //VerifiedByAdminId = certificate.VerifiedByAdminId
-                }).ToList() 
+                    Id = a.SelectedCertificate.Id,
+                    CertificateName = a.SelectedCertificate.CertificateName,
+                    CertificateNumber = a.SelectedCertificate.CertificateNumber,
+                    ImageUrl = a.SelectedCertificate.ImageUrl,
+                    Description = a.SelectedCertificate.Description,
+                    IssuingOrganization = a.SelectedCertificate.IssuingOrganization,
+                    CategoryId = a.SelectedCertificate.CategoryId,
+                    IssueDate = a.SelectedCertificate.IssueDate,
+                    ExpiryDate = a.SelectedCertificate.ExpiryDate
+                } : null
             };
         }
     }

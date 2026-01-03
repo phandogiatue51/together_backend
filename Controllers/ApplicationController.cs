@@ -42,7 +42,7 @@ namespace Together.Controllers
             {
                 return BadRequest(result.Message);
             }
-            return Ok(result.Message);
+            return Ok(new { message = result.Message, id = result.id });
         }
 
         [HttpPut("{id}")]

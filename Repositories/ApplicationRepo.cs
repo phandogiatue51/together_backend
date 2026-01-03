@@ -11,10 +11,10 @@ public class ApplicationRepo : BaseRepo<VolunteerApplication>
     {
         return _dbSet
             .Include(a => a.Project)
-                .ThenInclude(p => p.Organization)   
+                .ThenInclude(p => p.Organization)
             .Include(a => a.Volunteer)
-            .Include(a => a.SelectedCertificates)
-                .ThenInclude(c => c.Category)       
+            .Include(a => a.SelectedCertificate)  
+                .ThenInclude(c => c.Category)      
             .Include(a => a.ReviewedByStaff);
     }
 

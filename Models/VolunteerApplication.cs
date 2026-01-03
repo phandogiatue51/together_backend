@@ -23,6 +23,8 @@ namespace Together.Models
 
         [Required]
         public int VolunteerId { get; set; }
+        [Required]
+        public int SelectedCertificateId { get; set; }
 
         [Required]
         public ApplicationStatus Status { get; set; } = ApplicationStatus.Pending;
@@ -51,6 +53,8 @@ namespace Together.Models
 
         [ForeignKey("ReviewedByStaffId")]
         public virtual Staff? ReviewedByStaff { get; set; }
-        public virtual ICollection<Certificate> SelectedCertificates { get; set; } = new List<Certificate>();
+        [ForeignKey("SelectedCertificateId")]
+        public virtual Certificate SelectedCertificate { get; set; } = null!;
+
     }
 }

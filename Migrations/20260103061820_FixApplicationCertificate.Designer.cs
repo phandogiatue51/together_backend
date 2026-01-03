@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Together.Models;
@@ -11,9 +12,11 @@ using Together.Models;
 namespace Together.Migrations
 {
     [DbContext(typeof(TogetherDbContext))]
-    partial class TogetherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260103061820_FixApplicationCertificate")]
+    partial class FixApplicationCertificate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

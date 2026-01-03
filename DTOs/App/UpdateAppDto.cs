@@ -3,6 +3,6 @@
     public class UpdateAppDto
     {
         public string? RelevantExperience { get; set; }
-        public List<int> SelectedCertificateIds { get; set; } = new();
+        public int SelectedCertificateId { get; set; }
     }
 }

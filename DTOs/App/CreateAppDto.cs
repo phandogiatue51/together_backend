@@ -9,6 +9,6 @@ namespace Together.DTOs.App
         [Required]
         public int VolunteerId { get; set; }
         public string? RelevantExperience { get; set; }
-        public List<int> SelectedCertificateIds { get; set; } = new();
+        public int SelectedCertificateId { get; set; }
     }
 }

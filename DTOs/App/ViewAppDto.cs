@@ -25,6 +25,6 @@ namespace Together.DTOs.App
         public string? RejectionReason { get; set; }
 
         public string? Feedback { get; set; }
-        public virtual ICollection<ViewCertiDto> SelectedCertificates { get; set; }
+        public ViewCertiDto? SelectedCertificate { get; set; }
     }
 }

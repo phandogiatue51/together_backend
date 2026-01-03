@@ -99,13 +99,9 @@ namespace Together.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<VolunteerApplication>()
-                .HasMany(va => va.SelectedCertificates)
+                .HasOne(va => va.SelectedCertificate)
                 .WithMany()
-                .UsingEntity<Dictionary<string, object>>(
-                    "ApplicationCertificate",
-                    j => j.HasOne<Certificate>().WithMany().HasForeignKey("CertificateId"),
-                    j => j.HasOne<VolunteerApplication>().WithMany().HasForeignKey("ApplicationId")
-                );
+                .HasForeignKey(va => va.SelectedCertificateId);
 
             modelBuilder.Entity<BlogPost>()
                 .Property(b => b.Status)
