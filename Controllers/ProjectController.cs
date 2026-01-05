@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Pro;
 using Together.Models;
 using Together.Repositories;
@@ -7,6 +8,7 @@ using Together.Services;
 namespace Together.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "Admin,Staff")]
     [Route("api/[controller]")]
     public class ProjectsController : ControllerBase
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Staf;
 using Together.Models;
 using Together.Services;
@@ -6,6 +7,7 @@ using Together.Services;
 namespace Together.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     public class StaffController : ControllerBase
     {

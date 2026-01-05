@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Blog;
 using Together.Models;
@@ -7,6 +8,7 @@ using Together.Services;
 namespace Together.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     public class BlogController : ControllerBase
     {

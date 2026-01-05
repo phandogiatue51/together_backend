@@ -49,7 +49,7 @@ namespace Together.Services
             var existingAccount = await _accountRepo.ExistsAsync(a => a.Email == dto.Email);
             if (existingAccount)
             {
-                return (false, "Account with this email already exists.", 0);
+                return (false, "Email này đã được tạo cho một tài khoản khác", 0);
             }
 
             var account = new Account
@@ -70,7 +70,7 @@ namespace Together.Services
             }
 
             await _accountRepo.AddAsync(account);
-            return (true, "Account created successfully!", account.Id);
+            return (true, "Tạo tài khoản thành công!", account.Id);
         }
 
         public async Task<(bool Success, string Message)> UpdateAccount(int id, UpdateUserDto dto, IFormFile? imageFile)
