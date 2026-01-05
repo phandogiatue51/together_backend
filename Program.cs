@@ -113,6 +113,7 @@ builder.Services.AddScoped<HourRepo>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<QrService>();
+builder.Services.AddScoped<UnitOfWork>();
 
 var app = builder.Build();
 
