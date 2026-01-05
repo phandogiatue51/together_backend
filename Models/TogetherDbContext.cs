@@ -19,6 +19,7 @@ namespace Together.Models
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
         public DbSet<VolunteerApplication> VolunteerApplications { get; set; }
+        public DbSet<VolunteerHour> VolunteerHours { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -107,6 +108,18 @@ namespace Together.Models
                 .Property(b => b.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
+
+            modelBuilder.Entity<VolunteerHour>()
+                 .HasOne(vh => vh.VolunteerApplication)
+                 .WithMany(va => va.VolunteerHours)   
+                 .HasForeignKey(vh => vh.VolunteerApplicationId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<VolunteerHour>()
+                .HasOne(vh => vh.VolunteerApplication)
+                .WithMany(va => va.VolunteerHours)
+                .HasForeignKey(vh => vh.VolunteerApplicationId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -45,6 +45,9 @@ namespace Together.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<decimal?>("Hour")
+                        .HasColumnType("numeric");
+
                     b.Property<bool?>("IsFemale")
                         .HasColumnType("boolean");
 
@@ -525,6 +528,43 @@ namespace Together.Migrations
                     b.ToTable("VolunteerApplications");
                 });
 
+            modelBuilder.Entity("Together.Models.VolunteerHour", b =>
+                {
+                    b.Property<int>("RecordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RecordId"));
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CheckIn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CheckOut")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Hours")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VolunteerApplicationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RecordId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("VolunteerApplicationId");
+
+                    b.ToTable("VolunteerHours");
+                });
+
             modelBuilder.Entity("Together.Models.BlogPost", b =>
                 {
                     b.HasOne("Together.Models.Account", "Author")
@@ -643,6 +683,25 @@ namespace Together.Migrations
                     b.Navigation("Volunteer");
                 });
 
+            modelBuilder.Entity("Together.Models.VolunteerHour", b =>
+                {
+                    b.HasOne("Together.Models.Account", null)
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Together.Models.Project", null)
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("Together.Models.VolunteerApplication", "VolunteerApplication")
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("VolunteerApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VolunteerApplication");
+                });
+
             modelBuilder.Entity("Together.Models.Account", b =>
                 {
                     b.Navigation("Certificates");
@@ -650,6 +709,8 @@ namespace Together.Migrations
                     b.Navigation("OrganizationStaff");
 
                     b.Navigation("VolunteerApplications");
+
+                    b.Navigation("VolunteerHours");
                 });
 
             modelBuilder.Entity("Together.Models.Category", b =>
@@ -671,6 +732,13 @@ namespace Together.Migrations
                     b.Navigation("Categories");
 
                     b.Navigation("VolunteerApplications");
+
+                    b.Navigation("VolunteerHours");
+                });
+
+            modelBuilder.Entity("Together.Models.VolunteerApplication", b =>
+                {
+                    b.Navigation("VolunteerHours");
                 });
 #pragma warning restore 612, 618
         }

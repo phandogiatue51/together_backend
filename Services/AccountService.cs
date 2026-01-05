@@ -227,6 +227,7 @@ namespace Together.Services
                 DateOfBirth = account.DateOfBirth ?? default(DateOnly),
                 IsFemale = account.IsFemale ?? false,
                 Bio = account.Bio,
+                Hour = account.Hour,
                 ProfileImageUrl = account.ProfileImageUrl,
                 Role = (AccountRole)account.Role,
                 RoleName = account.Role.ToFriendlyName(),

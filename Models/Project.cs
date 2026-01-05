@@ -88,6 +88,7 @@ namespace Together.Models
         public virtual Organization Organization { get; set; } = null!;
 
         public virtual ICollection<VolunteerApplication> VolunteerApplications { get; set; } = new List<VolunteerApplication>();
+        public virtual ICollection<VolunteerHour> VolunteerHours { get; set; } = new List<VolunteerHour>();
         public virtual ICollection<ProjectCategory> Categories { get; set; } = new List<ProjectCategory>();
     }
 }

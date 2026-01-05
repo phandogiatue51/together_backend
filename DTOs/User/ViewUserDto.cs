@@ -12,6 +12,7 @@ namespace Together.DTOs.User
         public bool IsFemale { get; set; }
         public string? ProfileImageUrl { get; set; }
         public string? Bio { get; set; }
+        public decimal? Hour { get; set; }
         public AccountRole Role { get; set; }
         public string? RoleName { get; set; }
         public AccountStatus Status { get; set; }

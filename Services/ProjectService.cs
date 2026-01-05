@@ -145,6 +145,9 @@ namespace Together.Services
                     project.ImageUrl = await _imageStorageService.UpdateImageAsync(project.ImageUrl, newImageFile);
                 }
 
+                var oldStatus = project.Status;
+                project.Status = dto.Status;
+
                 await _projectRepo.UpdateAsync(project);
                 return (true, "Project updated successfully.");
             }

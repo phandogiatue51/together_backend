@@ -44,6 +44,7 @@ namespace Together.Models
         public bool? IsFemale { get; set; }
 
         public DateOnly? DateOfBirth { get; set; }
+        public decimal? Hour { get; set; } = 0.00m;
 
         [Required]
         public AccountRole Role { get; set; } = AccountRole.Volunteer;
@@ -56,6 +57,7 @@ namespace Together.Models
 
         public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
         public virtual ICollection<VolunteerApplication> VolunteerApplications { get; set; } = new List<VolunteerApplication>();
+        public virtual ICollection<VolunteerHour> VolunteerHours { get; set; } = new List<VolunteerHour>();
         public virtual ICollection<Staff> OrganizationStaff { get; set; } = new List<Staff>();
     }
 }

@@ -109,6 +109,10 @@ builder.Services.AddScoped<ApplicationService>();
 
 builder.Services.AddScoped<PasswordHelper>();
 builder.Services.AddScoped<CalculateScore>();
+builder.Services.AddScoped<HourRepo>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<QrService>();
 
 var app = builder.Build();
 

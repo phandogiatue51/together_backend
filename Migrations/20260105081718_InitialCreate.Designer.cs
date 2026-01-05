@@ -12,8 +12,8 @@ using Together.Models;
 namespace Together.Migrations
 {
     [DbContext(typeof(TogetherDbContext))]
-    [Migration("20251221042106_MinorFix")]
-    partial class MinorFix
+    [Migration("20260105081718_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,9 @@ namespace Together.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<decimal?>("Hour")
+                        .HasColumnType("numeric");
 
                     b.Property<bool?>("IsFemale")
                         .HasColumnType("boolean");
@@ -95,7 +98,7 @@ namespace Together.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Excerpt")
@@ -140,8 +143,10 @@ namespace Together.Migrations
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Subtitle")
                         .HasColumnType("text");
@@ -184,9 +189,6 @@ namespace Together.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Icon")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -218,6 +220,9 @@ namespace Together.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CertificateName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -226,9 +231,6 @@ namespace Together.Migrations
                     b.Property<string>("CertificateNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<int>("CertificateTypeId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -251,74 +253,13 @@ namespace Together.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime?>("VerifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("VerifiedByAdminId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("CertificateTypeId");
-
-                    b.HasIndex("VerifiedByAdminId");
-
-                    b.ToTable("Certificates");
-                });
-
-            modelBuilder.Entity("Together.Models.CertificateType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("IssuingAuthority")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CertificateTypes");
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("Together.Models.Organization", b =>
@@ -344,9 +285,6 @@ namespace Together.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("LogoUrl")
                         .HasColumnType("text");
 
@@ -358,6 +296,12 @@ namespace Together.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -383,6 +327,19 @@ namespace Together.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Activities")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Benefits")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Challenges")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -397,8 +354,17 @@ namespace Together.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Goals")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
+
+                    b.Property<string>("Impacts")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Location")
                         .HasMaxLength(200)
@@ -409,6 +375,11 @@ namespace Together.Migrations
 
                     b.Property<int>("RequiredVolunteers")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Requirements")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -460,37 +431,6 @@ namespace Together.Migrations
                         .IsUnique();
 
                     b.ToTable("ProjectCategories");
-                });
-
-            modelBuilder.Entity("Together.Models.ProjectRequirement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdditionalNotes")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("CertificateTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Level")
-                        .HasMaxLength(50)
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateTypeId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectRequirements");
                 });
 
             modelBuilder.Entity("Together.Models.Staff", b =>
@@ -566,6 +506,9 @@ namespace Together.Migrations
                     b.Property<int?>("ReviewedByStaffId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("SelectedCertificateId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -578,6 +521,8 @@ namespace Together.Migrations
 
                     b.HasIndex("ReviewedByStaffId");
 
+                    b.HasIndex("SelectedCertificateId");
+
                     b.HasIndex("VolunteerId");
 
                     b.HasIndex("ProjectId", "VolunteerId")
@@ -586,11 +531,50 @@ namespace Together.Migrations
                     b.ToTable("VolunteerApplications");
                 });
 
+            modelBuilder.Entity("Together.Models.VolunteerHour", b =>
+                {
+                    b.Property<int>("RecordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RecordId"));
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CheckIn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CheckOut")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Hours")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VolunteerApplicationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RecordId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("VolunteerApplicationId");
+
+                    b.ToTable("VolunteerHours");
+                });
+
             modelBuilder.Entity("Together.Models.BlogPost", b =>
                 {
                     b.HasOne("Together.Models.Account", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Together.Models.Organization", "Organization")
                         .WithMany("BlogPosts")
@@ -609,30 +593,13 @@ namespace Together.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Together.Models.CertificateType", "CertificateType")
-                        .WithMany("Certificates")
-                        .HasForeignKey("CertificateTypeId")
+                    b.HasOne("Together.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Together.Models.Account", "VerifiedByAdmin")
-                        .WithMany()
-                        .HasForeignKey("VerifiedByAdminId");
-
                     b.Navigation("Account");
-
-                    b.Navigation("CertificateType");
-
-                    b.Navigation("VerifiedByAdmin");
-                });
-
-            modelBuilder.Entity("Together.Models.CertificateType", b =>
-                {
-                    b.HasOne("Together.Models.Category", "Category")
-                        .WithMany("CertificateTypes")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.Navigation("Category");
                 });
@@ -653,7 +620,7 @@ namespace Together.Migrations
                     b.HasOne("Together.Models.Category", "Category")
                         .WithMany("ProjectCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Together.Models.Project", "Project")
@@ -663,25 +630,6 @@ namespace Together.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Together.Models.ProjectRequirement", b =>
-                {
-                    b.HasOne("Together.Models.CertificateType", "CertificateType")
-                        .WithMany("ProjectRequirements")
-                        .HasForeignKey("CertificateTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Together.Models.Project", "Project")
-                        .WithMany("Requirements")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CertificateType");
 
                     b.Navigation("Project");
                 });
@@ -717,6 +665,12 @@ namespace Together.Migrations
                         .WithMany()
                         .HasForeignKey("ReviewedByStaffId");
 
+                    b.HasOne("Together.Models.Certificate", "SelectedCertificate")
+                        .WithMany()
+                        .HasForeignKey("SelectedCertificateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Together.Models.Account", "Volunteer")
                         .WithMany("VolunteerApplications")
                         .HasForeignKey("VolunteerId")
@@ -727,7 +681,28 @@ namespace Together.Migrations
 
                     b.Navigation("ReviewedByStaff");
 
+                    b.Navigation("SelectedCertificate");
+
                     b.Navigation("Volunteer");
+                });
+
+            modelBuilder.Entity("Together.Models.VolunteerHour", b =>
+                {
+                    b.HasOne("Together.Models.Account", null)
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Together.Models.Project", null)
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("Together.Models.VolunteerApplication", "VolunteerApplication")
+                        .WithMany("VolunteerHours")
+                        .HasForeignKey("VolunteerApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VolunteerApplication");
                 });
 
             modelBuilder.Entity("Together.Models.Account", b =>
@@ -737,20 +712,13 @@ namespace Together.Migrations
                     b.Navigation("OrganizationStaff");
 
                     b.Navigation("VolunteerApplications");
+
+                    b.Navigation("VolunteerHours");
                 });
 
             modelBuilder.Entity("Together.Models.Category", b =>
                 {
-                    b.Navigation("CertificateTypes");
-
                     b.Navigation("ProjectCategories");
-                });
-
-            modelBuilder.Entity("Together.Models.CertificateType", b =>
-                {
-                    b.Navigation("Certificates");
-
-                    b.Navigation("ProjectRequirements");
                 });
 
             modelBuilder.Entity("Together.Models.Organization", b =>
@@ -766,9 +734,14 @@ namespace Together.Migrations
                 {
                     b.Navigation("Categories");
 
-                    b.Navigation("Requirements");
-
                     b.Navigation("VolunteerApplications");
+
+                    b.Navigation("VolunteerHours");
+                });
+
+            modelBuilder.Entity("Together.Models.VolunteerApplication", b =>
+                {
+                    b.Navigation("VolunteerHours");
                 });
 #pragma warning restore 612, 618
         }
