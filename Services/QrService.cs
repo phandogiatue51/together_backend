@@ -16,9 +16,10 @@ namespace Together.Services
         private readonly ApplicationRepo _applicationRepo;
         private readonly HourRepo _hourRepo;
         private readonly AccountRepo _accountRepo;
+        private readonly UnitOfWork _unitOfWork;
 
         public QrService(IMemoryCache cache, IWebHostEnvironment env, ProjectRepo projectRepo,
-            ApplicationRepo applicationRepo, HourRepo hourRepo, AccountRepo accountRepo)
+            ApplicationRepo applicationRepo, HourRepo hourRepo, AccountRepo accountRepo, UnitOfWork unitOfWork)
         {
             _cache = cache;
             _env = env;
@@ -26,6 +27,7 @@ namespace Together.Services
             _applicationRepo = applicationRepo;
             _hourRepo = hourRepo;
             _accountRepo = accountRepo;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<QrResponseDto> GenerateQrCodeAsync(GenerateQrDto dto)
@@ -67,79 +69,96 @@ namespace Together.Services
 
         public async Task<ScanResultDto> ProcessQrScanAsync(QrActionDto dto, int volunteerId)
         {
-            var cacheKey = $"qr-{dto.QrToken}";
-            if (!_cache.TryGetValue(cacheKey, out object tokenData))
-                throw new Exception("Invalid or expired QR code");
+            await _unitOfWork.BeginTransactionAsync();
 
-            dynamic data = tokenData;
-            int projectId = data.ProjectId;
-
-            var filter = new AppFilterDto
+            try
             {
-                ProjectId = projectId,
-                Status = ApplicationStatus.Approved,
-                VolunteerId = volunteerId,
-                OrganizationId = null
-            };
+                var cacheKey = $"qr-{dto.QrToken}";
+                if (!_cache.TryGetValue(cacheKey, out object tokenData))
+                    throw new Exception("Invalid or expired QR code");
 
-            var applications = await _applicationRepo.GetByFilterAsync(filter);
-            var application = applications.FirstOrDefault();
+                dynamic data = tokenData;
+                int projectId = data.ProjectId;
 
-            if (application == null)
-                throw new Exception("You are not approved for this project");
-
-            var actionTime = dto.ActionTime ?? DateTime.UtcNow;
-            var today = actionTime.Date;
-
-            var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, today);
-            if (activeRecord == null)
-            {
-                var record = new VolunteerHour
+                var filter = new AppFilterDto
                 {
-                    VolunteerApplicationId = application.Id,
-                    CheckIn = actionTime
+                    ProjectId = projectId,
+                    Status = null,
+                    VolunteerId = volunteerId,
+                    OrganizationId = null
                 };
 
-                _hourRepo.AddAsync(record);
+                var applications = await _applicationRepo.GetByFilterAsync(filter);
+                var application = applications.FirstOrDefault();
 
-                return new ScanResultDto
+                if (application == null)
+                    throw new Exception("You are not approved for this project");
+
+                var actionTime = dto.ActionTime ?? DateTime.UtcNow;
+                var today = actionTime.Date;
+
+                var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, today);
+
+                if (activeRecord == null)
                 {
-                    Action = "check-in",
-                    Message = $"Checked in to {application.Project.Title}",
-                    Time = actionTime,
-                    RecordId = record.RecordId
-                };
+                    var record = new VolunteerHour
+                    {
+                        VolunteerApplicationId = application.Id,
+                        CheckIn = actionTime
+                    };
+
+                    await _hourRepo.AddAsync(record); 
+                    await _unitOfWork.SaveChangesAsync(); 
+
+                    await _unitOfWork.CommitAsync();
+
+                    return new ScanResultDto
+                    {
+                        Action = "check-in",
+                        Message = $"Checked in to {application.Project.Title}",
+                        Time = actionTime,
+                        RecordId = record.RecordId
+                    };
+                }
+                else
+                {
+                    if (activeRecord.CheckOut.HasValue)
+                        throw new Exception("Already checked out");
+
+                    if (actionTime <= activeRecord.CheckIn)
+                        throw new Exception("Check-out time must be after check-in");
+
+                    activeRecord.CheckOut = actionTime;
+
+                    var timeSpan = activeRecord.CheckOut.Value - activeRecord.CheckIn.Value;
+                    activeRecord.Hours = (decimal)timeSpan.TotalHours;
+
+                    await _hourRepo.UpdateAsync(activeRecord);
+
+                    var account = await _accountRepo.GetByIdAsync(volunteerId);
+                    account.Hour += activeRecord.Hours;
+                    await _accountRepo.UpdateAsync(account);
+
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+
+                    return new ScanResultDto
+                    {
+                        Action = "check-out",
+                        Message = $"Checked out from {application.Project.Title}",
+                        HoursWorked = activeRecord.Hours,
+                        TotalHours = account.Hour,
+                        CheckInTime = activeRecord.CheckIn,
+                        CheckOutTime = activeRecord.CheckOut
+                    };
+                }
             }
-            else
+            catch (Exception)
             {
-                if (activeRecord.CheckOut.HasValue)
-                    throw new Exception("Already checked out");
-
-                if (actionTime <= activeRecord.CheckIn)
-                    throw new Exception("Check-out time must be after check-in");
-
-                activeRecord.CheckOut = actionTime;
-
-                var timeSpan = activeRecord.CheckOut.Value - activeRecord.CheckIn.Value;
-                activeRecord.Hours = (decimal)timeSpan.TotalHours;
-
-                _hourRepo.UpdateAsync(activeRecord);
-
-                var account = await _accountRepo.GetByIdAsync(volunteerId);
-                account.Hour += activeRecord.Hours;
-
-                _accountRepo.UpdateAsync(account);
-
-                return new ScanResultDto
-                {
-                    Action = "check-out",
-                    Message = $"Checked out from {application.Project.Title}",
-                    HoursWorked = activeRecord.Hours,
-                    TotalHours = application.Volunteer.Hour,
-                    CheckInTime = activeRecord.CheckIn,
-                    CheckOutTime = activeRecord.CheckOut
-                };
+                await _unitOfWork.RollbackAsync();
+                throw;
             }
         }
+
     }
 }
