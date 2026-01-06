@@ -49,9 +49,9 @@ namespace Together.Controllers
             var result = await _certificateService.CreateCertificateAsync(dto, dto.ImageUrl);
 
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpPut("{id}")]
@@ -60,9 +60,9 @@ namespace Together.Controllers
             var result = await _certificateService.UpdateCertificateAsync(id, dto, dto.ImageUrl);
 
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpDelete("{id}")]
@@ -70,10 +70,9 @@ namespace Together.Controllers
         {
             var result = await _certificateService.DeleteCertificateAsync(id);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpGet("filter")]

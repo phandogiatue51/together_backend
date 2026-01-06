@@ -14,9 +14,10 @@ namespace Together.Services
         private readonly AccountRepo _accountRepo;
         private readonly PasswordHelper _passwordHelper;
         private readonly CloudinaryService _cloudinaryService;
+        private readonly UnitOfWork _unitOfWork;
 
         public StaffService(StaffRepo staffRepo, AccountService accountService, OrganizationRepo organRepo,
-            AccountRepo accountRepo, PasswordHelper passwordHelper, CloudinaryService cloudinaryService)
+            AccountRepo accountRepo, PasswordHelper passwordHelper, CloudinaryService cloudinaryService, UnitOfWork unitOfWork)
         {
             _staffRepo = staffRepo;
             _accountService = accountService;
@@ -24,6 +25,7 @@ namespace Together.Services
             _accountRepo = accountRepo;
             _passwordHelper = passwordHelper;
             _cloudinaryService = cloudinaryService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<ViewStaffDto>> GetAllStaff()
@@ -99,7 +101,7 @@ namespace Together.Services
                 if (!dto.IsActive.Value)
                     staff.LeftAt = DateTime.UtcNow;
                 else if (dto.IsActive.Value && staff.LeftAt.HasValue)
-                    staff.LeftAt = null; 
+                    staff.LeftAt = null;
             }
 
             if (staff.Account != null)
@@ -164,23 +166,29 @@ namespace Together.Services
 
         public async Task<(bool Success, string Message)> ChangeStatus(int staffId)
         {
-            var staff = await _staffRepo.GetByIdAsync(staffId);
-            if (staff == null)
-                return (false, "Không tìm thấy nhân viên!");
-
-            staff.IsActive = !staff.IsActive;
-
-            if (!staff.IsActive)
+            try
             {
-                staff.LeftAt = DateTime.UtcNow;
-            }
-            else if (staff.IsActive && staff.LeftAt.HasValue)
-            {
-                staff.LeftAt = null;
-            }
+                await _unitOfWork.BeginTransactionAsync();
+                var staff = await _staffRepo.GetByIdAsync(staffId);
+                if (staff == null)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return (false, "Không tìm thấy nhân viên!");
+                }
+                staff.IsActive = !staff.IsActive;
+                staff.LeftAt = staff.IsActive ? null : DateTime.UtcNow;
 
-            await _staffRepo.UpdateAsync(staff);
-            return (true, "Cập nhật trạng thái thành công!");
+                var account = await _accountRepo.GetByIdAsync(staff.AccountId);
+                account.Status = staff.IsActive ? AccountStatus.Active : AccountStatus.Inactive;
+
+                await _accountRepo.UpdateAsync(account); await _staffRepo.UpdateAsync(staff);
+                await _unitOfWork.CommitAsync(); return (true, "Cập nhật trạng thái thành công!");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return (false, $"Có lỗi xảy ra: {ex.Message}");
+            }
         }
 
         private ViewStaffDto MapToViewStaffDto(Staff staff)

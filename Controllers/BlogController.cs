@@ -39,8 +39,9 @@ namespace Together.Controllers
         {
             var result = await _blogService.CreateBlog(dto);
             if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpPut("{id}")]
@@ -48,8 +49,9 @@ namespace Together.Controllers
         {
             var result = await _blogService.UpdateBlog(id, dto);
             if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpDelete("{id}")]
@@ -57,8 +59,9 @@ namespace Together.Controllers
         {
             var result = await _blogService.DeleteBlog(id);
             if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpPut("{id}/status")]
@@ -66,8 +69,9 @@ namespace Together.Controllers
         {
             var result = await _blogService.ChangeBlogStatus(id, status);
             if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpGet("filter")]

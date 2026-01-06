@@ -46,9 +46,9 @@ namespace Together.Controllers
             var result = await _staffService.CreateStaff(dto);
 
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpPut("{id}")]
@@ -56,9 +56,9 @@ namespace Together.Controllers
         {
             var result = await _staffService.UpdateStaff(id, dto);
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpDelete("{id}")]
@@ -66,9 +66,9 @@ namespace Together.Controllers
         {
             var result = await _staffService.DeleteStaff(id);
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpPut("{id}/change-status")]
@@ -76,8 +76,9 @@ namespace Together.Controllers
         {
             var result = await _staffService.ChangeStatus(id);
             if (!result.Success)
-                return BadRequest(result.Message);
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpGet("filter")]

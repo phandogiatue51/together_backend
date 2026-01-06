@@ -78,5 +78,17 @@ namespace Together.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<List<Project>> GetHomePageProject()
+        {
+            var query = WithIncludes()
+                .Include(p => p.Categories)
+                    .ThenInclude(pc => pc.Category)
+                .Where(s => s.Status == ProjectStatus.Recruiting
+                         || s.Status == ProjectStatus.Active
+                         || s.Status == ProjectStatus.Completed);
+
+            return await query.ToListAsync();
+        }
     }
 }

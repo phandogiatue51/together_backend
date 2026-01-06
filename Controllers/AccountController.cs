@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.App;
 using Together.DTOs.User;
 using Together.Models;
@@ -16,6 +17,7 @@ namespace Together.Controllers
             _accountService = accountService; 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<List<ViewUserDto>>> GetAllUsers()
         {
@@ -23,6 +25,7 @@ namespace Together.Controllers
             return result;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<ViewUserDto>> GetUserById(int id)
         {
@@ -39,10 +42,9 @@ namespace Together.Controllers
         {
             var result = await _accountService.CreateAccount(dto, Models.AccountRole.Volunteer);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpPost("login")]
@@ -57,28 +59,28 @@ namespace Together.Controllers
             {
                 result.Token, result.Role, result.Message
             });
-        }   
+        }
 
+        [Authorize(Roles = "Volunteer")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromForm] UpdateUserDto dto)
         {
             var result = await _accountService.UpdateAccount(id, dto, dto.ProfileImageUrl);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             var result = await  _accountService.DeleteAccount(id);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpPut("change-password/{id}")]
@@ -86,12 +88,12 @@ namespace Together.Controllers
         {
             var result = await _accountService.ChangePassword(id, dto);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpGet("filter")]
         public async Task<ActionResult<List<ViewUserDto>>> GetUsersByFilter(
             [FromQuery] string? name = null,
@@ -109,6 +111,16 @@ namespace Together.Controllers
 
             var result = await _accountService.GetAccountsByFilter(filter);
             return result;
+        }
+
+        [HttpPut("change-status")]
+        public async Task<ActionResult> ChangeStatus(int id)
+        {
+            var result = await _accountService.ChangeStatus(id);
+            if (!result.Success)
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
     }
 }

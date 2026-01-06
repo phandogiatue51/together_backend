@@ -8,7 +8,6 @@ using Together.Services;
 namespace Together.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin,Staff")]
     [Route("api/[controller]")]
     public class ProjectsController : ControllerBase
     {
@@ -38,6 +37,7 @@ namespace Together.Controllers
             return project;
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<ActionResult> CreateProject([FromForm] CreateProjectDto dto)
         {
@@ -55,6 +55,7 @@ namespace Together.Controllers
                 new { message = result.Message, projectId = result.ProjectId });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProject(int id, [FromForm] UpdateProjectDto dto)
         {
@@ -69,6 +70,7 @@ namespace Together.Controllers
             return Ok(new { message = result.Message });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProject(int id)
         {
@@ -100,9 +102,16 @@ namespace Together.Controllers
                 Status = Status,
                 CreatedAt = CreatedAt,
                 OrganizationId = organizationId,
-                CategoryIds = categoryIds ?? new List<int>()  
+                CategoryIds = categoryIds ?? new List<int>()
             };
             var projects = await _projectService.GetProjectsByFilter(filter);
+            return projects;
+        }
+
+        [HttpGet("homepage-project")]
+        public async Task<ActionResult<List<ViewProjectDto>>> GetHomepageProject()
+        {
+            var projects = await _projectService.GetHomePageProject();
             return projects;
         }
 
@@ -134,7 +143,5 @@ namespace Together.Controllers
                 return StatusCode(500, $"Error finding matches: {ex.Message}");
             }
         }
-
-        
     }
 }

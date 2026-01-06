@@ -17,7 +17,7 @@ namespace Together.Services
         private readonly StaffRepo _staffRepo;
         private readonly CloudinaryService _imageStorageService;
 
-        public AccountService(AccountRepo accountRepo, PasswordHelper passwordHelper, IConfiguration configuration, 
+        public AccountService(AccountRepo accountRepo, PasswordHelper passwordHelper, IConfiguration configuration,
             StaffRepo staffRepo, CloudinaryService imageStorageService)
         {
             _accountRepo = accountRepo;
@@ -216,7 +216,22 @@ namespace Together.Services
             return accounts.Select(MapToViewUserDto).ToList();
         }
 
-        public ViewUserDto MapToViewUserDto (Account account)
+        public async Task<(bool Success, string Message)> ChangeStatus(int accountId)
+        {
+            var account = await _accountRepo.GetByIdAsync(accountId);
+            if (account == null)
+            {
+                return (false, "Không tìm thấy tài khoản!");
+            }
+
+            account.Status = account.Status == AccountStatus.Active ? AccountStatus.Inactive : AccountStatus.Active;
+
+            await _accountRepo.UpdateAsync(account);
+            return (true, "Cập nhật trạng thái thành công!");
+        }
+
+
+        public ViewUserDto MapToViewUserDto(Account account)
         {
             return new ViewUserDto
             {

@@ -40,7 +40,7 @@ namespace Together.Controllers
             var result = await _applicationService.CreateApplicationAsync(dto);
             if (!result.Success)
             {
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
             }
             return Ok(new { message = result.Message, id = result.id });
         }
@@ -50,10 +50,9 @@ namespace Together.Controllers
         {
             var result = await _applicationService.UpdateApplicationAsync(id, dto);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpPut("review/{id}")]
@@ -61,10 +60,9 @@ namespace Together.Controllers
         {
             var result = await _applicationService.ReviewApplicationAsync(id, dto);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpDelete("{id}")]
@@ -72,10 +70,9 @@ namespace Together.Controllers
         {
             var result = await _applicationService.DeleteApplicationAsync(id);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpGet("filter")]

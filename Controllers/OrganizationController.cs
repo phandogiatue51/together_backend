@@ -9,7 +9,6 @@ using Together.Services;
 namespace Together.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     public class OrganizationController : ControllerBase
     {
@@ -36,15 +35,16 @@ namespace Together.Controllers
             return organ;
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<ActionResult> CreateOrgan([FromForm] CreateOrganDto dto)
         {
             var result = await _organService.CreateOrgan(dto, dto.ImageFile);
 
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message });
 
-            return Ok(result.Message);
+            return Ok(new { result.Message });
         }
 
         [HttpPost("create-with-manager")]
@@ -61,37 +61,38 @@ namespace Together.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateOrgan(int id, [FromForm] CreateOrganDto dto)
         {
             var result = await _organService.UpdateOrgan(id, dto, dto.ImageFile);
 
             if (!result.Success)
-                return BadRequest(result.Message);
+                return BadRequest(new { result.Message }); 
 
-            return Ok(result.Message);
+            return Ok(new { result.Message }); 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrgan(int id)
         {
             var result = await _organService.DeleteOrgan(id);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("verify/{id}")]
         public async Task<ActionResult> VerifyOrgan(int id, VerifyOrganDto dto)
         {
             var result = await _organService.VerifyOrgan(id, dto);
             if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Message);
+                return BadRequest(new { result.Message });
+
+            return Ok(new { result.Message });
         }
 
         [HttpGet("filter")]

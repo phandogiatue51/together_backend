@@ -196,6 +196,12 @@ namespace Together.Services
             return projects.Select(project => MapToViewProjectDto(project)).ToList();
         }
 
+        public async Task<List<ViewProjectDto>> GetHomePageProject()
+        {
+            var projects = await _projectRepo.GetHomePageProject();
+            return projects.Select(project => MapToViewProjectDto(project)).ToList();
+        }
+
         public async Task<(bool Success, string Message)> RemoveCategoryFromProject(int projectId, int categoryId)
         {
             var project = await _projectRepo.GetByIdAsync(projectId);
