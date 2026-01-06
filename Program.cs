@@ -51,31 +51,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddDbContext<TogetherDbContext>(options =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-    if (builder.Environment.IsDevelopment())
-    {
-        options.UseNpgsql(connectionString);
-    }
-    else
-    {
-        var host = Environment.GetEnvironmentVariable("DB_HOST") ??
-                   "ep-muddy-unit-a11teyim-pooler.ap-southeast-1.aws.neon.tech";
-        var db = Environment.GetEnvironmentVariable("DB_NAME") ?? "neondb";
-        var user = Environment.GetEnvironmentVariable("DB_USER") ?? "neondb_owner";
-        var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-        var prodConnectionString = $"Host={host};Database={db};Username={user};Password={password};SslMode=Require;Trust Server Certificate=true";
-        options.UseNpgsql(prodConnectionString);
-    }
-
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(options =>
 {

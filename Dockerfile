@@ -1,10 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+COPY ["Together.csproj", "."]
+RUN dotnet restore "Together.csproj"
 COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet build "Together.csproj" -c Release -o /app/build
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "Together.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=publish /app/publish .
+RUN mkdir -p /app/image
 ENTRYPOINT ["dotnet", "Together.dll"]
