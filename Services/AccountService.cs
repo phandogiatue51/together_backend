@@ -49,7 +49,7 @@ namespace Together.Services
             var existingAccount = await _accountRepo.ExistsAsync(a => a.Email == dto.Email);
             if (existingAccount)
             {
-                return (false, "Email này đã được tạo cho một tài khoản khác", 0);
+                return (false, "Email này đã được tạo cho một tài khoản khác!", 0);
             }
 
             var account = new Account
@@ -78,7 +78,7 @@ namespace Together.Services
             var account = await _accountRepo.GetByIdAsync(id);
             if (account == null)
             {
-                return (false, "Account not found.");
+                return (false, "Không tìm thấy tài khoản!");
             }
 
             account.Name = dto.Name ?? account.Name;
@@ -93,7 +93,7 @@ namespace Together.Services
                     a.Email == dto.Email && a.Id != id);
 
                 if (emailExists)
-                    return (false, "Email already in use by another account.");
+                    return (false, "Email này đã được tạo cho một tài khoản khác!");
 
                 account.Email = dto.Email;
             }
@@ -107,7 +107,7 @@ namespace Together.Services
             }
 
             await _accountRepo.UpdateAsync(account);
-            return (true, "Account updated successfully!");
+            return (true, "Cập nhật tài khoản thành công!");
         }
 
         public async Task<(bool Success, string Message)> DeleteAccount(int id)
@@ -115,11 +115,11 @@ namespace Together.Services
             var account = await _accountRepo.GetByIdAsync(id);
             if (account == null)
             {
-                return (false, "Account not found.");
+                return (false, "Không tìm thấy tài khoản!");
             }
 
             await _accountRepo.DeleteAsync(account);
-            return (true, "Account deleted successfully!");
+            return (true, "Xóa tài khoản thành công!");
         }
 
         public async Task<(bool Success, string Message, string Token, AccountRole Role)> LoginAsync(LoginDto dto)
@@ -127,13 +127,13 @@ namespace Together.Services
             var user = await _accountRepo.GetByEmailAsync(dto.Email);
 
             if (user == null)
-                return (false, "Account does not exist!", null, default(AccountRole));
+                return (false, "Không tìm thấy tài khoản!", null, default(AccountRole));
 
             if (user.Status == AccountStatus.Inactive)
-                return (false, "Account is inactive. Please contact support.", null, default(AccountRole));
+                return (false, "Tài khoản đã dừng hoạt động! Nếu bạn có thắc mắc, hãy liên hệ Admin.", null, default(AccountRole));
 
             if (!_passwordHelper.VerifyPassword(dto.Password, user.PasswordHash))
-                return (false, "Wrong password", null, default(AccountRole));
+                return (false, "Sai mật khẩu!", null, default(AccountRole));
 
             var claims = await GenerateUserClaims(user);
 
@@ -160,7 +160,7 @@ namespace Together.Services
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return (true, "Login successful", tokenString, user.Role);
+            return (true, "Đăng nhập thành công!", tokenString, user.Role);
         }
 
         private async Task<List<Claim>> GenerateUserClaims(Account user)
@@ -195,19 +195,19 @@ namespace Together.Services
             var account = await _accountRepo.GetByIdAsync(accountId);
             if (account == null)
             {
-                return (false, "Account not found!");
+                return (false, "Không tìm thấy tài khoản!");
             }
             if (!_passwordHelper.VerifyPassword(dto.CurrentPassword, account.PasswordHash))
             {
-                return (false, "Current password is incorrect.");
+                return (false, "Sai mật khẩu!");
             }
             if (dto.NewPassword != dto.ConfirmNewPassword)
             {
-                return (false, "New password and confirmation do not match.");
+                return (false, "Mật khẩu mới và mật khẩu xác nhận không trùng khớp");
             }
             account.PasswordHash = _passwordHelper.HashPassword(dto.NewPassword);
             await _accountRepo.UpdateAsync(account);
-            return (true, "Password changed successfully!");
+            return (true, "Thay đổi mật khẩu thành công!");
         }
 
         public async Task<List<ViewUserDto>> GetAccountsByFilter(UserFilterDto filter)

@@ -71,6 +71,15 @@ namespace Together.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPut("{id}/change-status")]
+        public async Task<ActionResult> ActivateStaff(int id)
+        {
+            var result = await _staffService.ChangeStatus(id);
+            if (!result.Success)
+                return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
         [HttpGet("filter")]
         public async Task<ActionResult<List<ViewStaffDto>>> GetStaffByFilter(
             [FromQuery] string? Name,

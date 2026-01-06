@@ -44,19 +44,19 @@ namespace Together.Services
 
             if (existing != null && (existing.Status == ApplicationStatus.Pending || existing.Status == ApplicationStatus.Approved))
             {
-                return (false, "You have already applied for this project.", null);
+                return (false, "Bạn đã đăng ký chương trình này!", null);
             }
 
             var project = await _projectRepo.GetByIdAsync(dto.ProjectId);
             if (project == null)
             {
-                return (false, "Project not found.", null);
+                return (false, "Không tìm thấy chương trình!", null);
             }
 
             var volunteer = await _accountRepo.GetByIdAsync(dto.VolunteerId);
             if (volunteer == null)
             {
-                return (false, "Volunteer account not found.", null);
+                return (false, "Không tìm thấy tài khoản!", null);
             }
 
             var newApp = new VolunteerApplication
@@ -70,18 +70,18 @@ namespace Together.Services
             };
 
             await _applicationRepo.AddAsync(newApp);
-            return (true, "Application created successfully.", newApp.Id);
+            return (true, "Đăng ký chương trình thành công! Vui lòng đợi tổ chức phê duyệt!", newApp.Id);
         }
 
         public async Task<(bool Success, string Message)> UpdateApplicationAsync(int id, UpdateAppDto dto)
         {
             var app = await _applicationRepo.GetByIdAsync(id);
             if (app == null)
-                return (false, "Application not found!");
+                return (false, "Không tìm thấy đơn đăng ký!");
 
             if (app.Status == ApplicationStatus.Approved || app.Status == ApplicationStatus.Rejected)
             {
-                return (false, "Cannot update an application that has already been reviewed.");
+                return (false, "Không thể cập nhật đơn đăng ký");
             }
 
             if (dto.RelevantExperience != null)
@@ -92,16 +92,16 @@ namespace Together.Services
             dto.SelectedCertificateId = app.SelectedCertificateId;
 
             await _applicationRepo.UpdateAsync(app);
-            return (true, "Application updated successfully.");
+            return (true, "Cập nhật đơn đăng ký thành công!");
         }
 
         public async Task<(bool Success, string Message)> DeleteApplicationAsync(int id)
         {
             var app = await _applicationRepo.GetByIdAsync(id);
             if (app == null)
-                return (false, "Application not found!");
+                return (false, "Không tìm thấy đơn đăng ký!");
             await _applicationRepo.DeleteAsync(app);
-            return (true, "Application deleted successfully.");
+            return (true, "Xóa đơn đăng ký thành công");
         }
 
         public async Task<List<ViewAppDto>> GetApplicationsByFilterAsync(AppFilterDto filter)
@@ -114,17 +114,17 @@ namespace Together.Services
         {
             var app = await _applicationRepo.GetByIdAsync(id);
             if (app == null)
-                return (false, "Application not found!");
+                return (false, "Không tìm thấy đơn đăng ký!");
 
             var staff = await _staffRepo.GetByIdAsync(dto.ReviewedByStaffId ?? 0);
             if (staff == null || staff.Role == StaffRole.Employee)
             {
-                return (false, "You are not allowed to approve applications.");
+                return (false, "Bạn không có quyền phê duyệt đơn đăng ký");
             }
 
             if (app.Status != ApplicationStatus.Pending)
             {
-                return (false, "Only pending applications can be reviewed.");
+                return (false, "Chỉ có thể phê duyệt đơn đăng ký trong trạng thái chờ!");
             }
 
             app.Status = dto.Status;
@@ -143,7 +143,7 @@ namespace Together.Services
 
             await _projectRepo.UpdateAsync(app.Project!);
             await _applicationRepo.UpdateAsync(app);
-            return (true, "Application reviewed successfully.");
+            return (true, "Phê duyệt đơn đăng ký thành công!");
         }
 
         private ViewAppDto MapToViewAppDto(VolunteerApplication a)

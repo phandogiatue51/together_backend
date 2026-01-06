@@ -96,13 +96,13 @@ namespace Together.Services
 
                 await _blogRepo.AddAsync(blog);
 
-                return (true, "Blog created successfully", blog.Id);
+                return (true, "Tạo bài viết thành công", blog.Id);
             }
             catch (Exception ex)
             {
                 await RollbackUploads(featuredImageUrl, contentImageUrls);
 
-                return (false, $"Error creating blog: {ex.Message}", null);
+                return (false, $"Không thể tạo bài viết: {ex.Message}", null);
             }
         }
 
@@ -127,7 +127,7 @@ namespace Together.Services
             }
             catch
             {
-                Console.WriteLine("Failed to cleanup uploaded images");
+                Console.WriteLine("Không thể thêm hình ảnh");
             }
         }
 
@@ -135,7 +135,7 @@ namespace Together.Services
         {
             var blog = await _blogRepo.GetByIdAsync(blogId);
             if (blog == null)
-                return (false, "Blog not found");
+                return (false, "Không tìm thấy bài viết!");
 
             var imagesToDelete = new List<string>();
 
@@ -179,12 +179,12 @@ namespace Together.Services
 
                 await DeleteOldImages(imagesToDelete);
 
-                return (true, "Blog updated successfully");
+                return (true, "Cập nhật bài viết thành công");
             }
             catch (Exception ex)
             {
                 await RollbackNewUploads(blog, imagesToDelete);
-                return (false, $"Error updating blog: {ex.Message}");
+                return (false, $"Không thể cập nhật bài viết: {ex.Message}!");
             }
         }
 
@@ -219,7 +219,7 @@ namespace Together.Services
                 }
                 catch
                 {
-                    Console.WriteLine($"Failed to delete image: {url}");
+                    Console.WriteLine($"Không thể xóa hình ảnh: {url}!");
                 }
             }
         }
@@ -249,7 +249,7 @@ namespace Together.Services
         {
             var blog = await _blogRepo.GetByIdAsync(blogId);
             if (blog == null)
-                return (false, "Blog not found");
+                return (false, "Không tìm thấy bài viết!");
 
             var imagesToDelete = new List<string>
             {
@@ -265,11 +265,11 @@ namespace Together.Services
             {
                 await _blogRepo.DeleteAsync(blog);
                 await DeleteOldImages(imagesToDelete);
-                return (true, "Blog deleted successfully");
+                return (true, "Xóa bài viết thành công");
             }
             catch (Exception ex)
             {
-                return (false, $"Error deleting blog: {ex.Message}");
+                return (false, $"Không thể xóa bài viết: {ex.Message}");
             }
         }
 
@@ -277,17 +277,17 @@ namespace Together.Services
         {
             var blog = await _blogRepo.GetByIdAsync(blogId);
             if (blog == null)
-                return (false, "Blog not found");
+                return (false, "Không tìm thấy bài viết!");
             blog.Status = status;
             blog.UpdatedDate = DateTime.UtcNow;
             try
             {
                 await _blogRepo.UpdateAsync(blog);
-                return (true, "Blog status updated successfully");
+                return (true, "Cập nhật bài viết thành công");
             }
             catch (Exception ex)
             {
-                return (false, $"Error updating blog status: {ex.Message}");
+                return (false, $"Không thể cập nhật bài viết: {ex.Message}");
             }
         }
 

@@ -48,14 +48,14 @@ namespace Together.Services
             {
                 var account = await _accountRepo.GetByIdAsync(dto.AccountId);
                 if (account == null)
-                    return (false, "Account not found.", null);
+                    return (false, "Không tìm thấy tài khoản!", null);
 
                 var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
                 if (category == null || !category.IsActive)
-                    return (false, "Category not found or inactive.", null);
+                    return (false, "Không tìm thấy phân loại!", null);
 
                 if (imageFile == null || imageFile.Length == 0)
-                    return (false, "Certificate image is required.", null);
+                    return (false, "Cần thêm hình ảnh bằng cấp!", null);
 
                 var imageUrl = await _imageStorageService.UploadImageAsync(imageFile);
 
@@ -73,11 +73,11 @@ namespace Together.Services
                 };
 
                 await _certificateRepo.AddAsync(certificate);
-                return (true, "Certificate uploaded successfully. Awaiting admin verification.", certificate.Id);
+                return (true, "Thêm bằng cấp thành công!", certificate.Id);
             }
             catch (Exception ex)
             {
-                return (false, $"Error creating certificate: {ex.Message}", null);
+                return (false, $"Không thể thêm bằng cấp: {ex.Message}!", null);
             }
         }
 
@@ -87,11 +87,11 @@ namespace Together.Services
             {
                 var certificate = await _certificateRepo.GetByIdAsync(id);
                 if (certificate == null)
-                    return (false, "Certificate not found.");
+                    return (false, "Không tìm thấy bằng cấp!");
 
                 var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
                 if (category == null || !category.IsActive)
-                    return (false, "Category not found or inactive.");
+                    return (false, "Không tìm thấy phân loại!");
 
                 certificate.CertificateName = dto.CertificateName;
                 certificate.CategoryId = dto.CategoryId;
@@ -108,11 +108,11 @@ namespace Together.Services
                 }
 
                 await _certificateRepo.UpdateAsync(certificate);
-                return (true, "Certificate updated successfully.");
+                return (true, "Cập nhật bằng cấp thành công!");
             }
             catch (Exception ex)
             {
-                return (false, $"Error updating certificate: {ex.Message}");
+                return (false, $"Không thể cập nhật bằng cấp: {ex.Message}!");
             }
         }
 
@@ -122,7 +122,7 @@ namespace Together.Services
             {
                 var certificate = await _certificateRepo.GetByIdAsync(id);
                 if (certificate == null)
-                    return (false, "Certificate not found.");
+                    return (false, "Không tìm thấy bằng cấp!");
 
                 if (!string.IsNullOrEmpty(certificate.ImageUrl))
                 {
@@ -130,11 +130,11 @@ namespace Together.Services
                 }
 
                 await _certificateRepo.DeleteAsync(certificate);
-                return (true, "Certificate deleted successfully.");
+                return (true, "Xóa bằng cấp thành công!");
             }
             catch (Exception ex)
             {
-                return (false, $"Error deleting certificate: {ex.Message}");
+                return (false, $"Không thể xóa bằng cấp: {ex.Message}!");
             }
         }
 
@@ -158,12 +158,7 @@ namespace Together.Services
                 IssueDate = certificate.IssueDate,
                 ExpiryDate = certificate.ExpiryDate,
                 Description = certificate.Description,
-                ImageUrl = certificate.ImageUrl,
-                //Status = certificate.Status,
-                //StatusName = certificate.Status.ToString(),
-                //CreatedAt = certificate.CreatedAt,
-                //VerifiedAt = certificate.VerifiedAt,
-                //VerifiedByAdminId = certificate.VerifiedByAdminId
+                ImageUrl = certificate.ImageUrl
             };
         }
     }

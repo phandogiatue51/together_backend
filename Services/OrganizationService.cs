@@ -60,7 +60,7 @@ namespace Together.Services
             }
 
             await _organRepo.AddAsync(organ);
-            return (true, "Organization created successfully!");
+            return (true, "Tạo tổ chức thành công!");
         }
 
         public async Task<(bool Success, string Message, int? OrganizationId, int? StaffId)>
@@ -110,18 +110,18 @@ namespace Together.Services
                     await _organRepo.DeleteAsync(organization);
 
                     return (false,
-                        $"Organization created but failed to create manager: {staffResult.Message}",
+                        $"Tạo tổ chức thành công nhưng tạo nhân viên tổ chức thất bại: {staffResult.Message}!",
                         null, null);
                 }
 
                 return (true,
-                    "Organization registration submitted successfully. Pending admin approval.",
+                    "Tạo tổ chức thành công. Vui lòng đợi Admin phê duyệt!",
                     organization.Id,
                     staffResult.StaffId);
             }
             catch (Exception ex)
             {
-                return (false, $"Error creating organization: {ex.Message}", null, null);
+                return (false, $"Không thể tạo tổ chức: {ex.Message}!", null, null);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Together.Services
             var existing = await _organRepo.GetByIdAsync(id);
             if (existing == null)
             {
-                return (false, "Organization not found!");
+                return (false, "Không tìm thấy tổ chức!");
             }
             existing.Name = dto.Name;
             existing.Description = dto.Description;
@@ -146,7 +146,7 @@ namespace Together.Services
                     newImageFile);
             }
             await _organRepo.UpdateAsync(existing);
-            return (true, "Organization updated successfully!");
+            return (true, "Cập nhật tổ chức thành công!");
         }
 
         public async Task<(bool Success, string Message)> DeleteOrgan(int id)
@@ -154,7 +154,7 @@ namespace Together.Services
             var organ = await _organRepo.GetByIdAsync(id);
             if (organ == null)
             {
-                return (false, "Organization not found!");
+                return (false, "Không tìm thấy tổ chức!");
             }
 
             if (!string.IsNullOrEmpty(organ.LogoUrl))
@@ -163,7 +163,7 @@ namespace Together.Services
             }
 
             await _organRepo.DeleteAsync(organ);
-            return (true, "Organization deleted successfully!");
+            return (true, "Xóa tổ chức thành công!");
         }
 
         public async Task<(bool Success, string Message)> VerifyOrgan(int id, VerifyOrganDto dto)
@@ -171,7 +171,7 @@ namespace Together.Services
             var organ = await _organRepo.GetByIdAsync(id);
             if (organ == null)
             {
-                return (false, "Organization not found!");
+                return (false, "Không tìm thấy tổ chức!");
             }
 
             organ.Status = dto.Status;
@@ -179,12 +179,12 @@ namespace Together.Services
             {
                 if (string.IsNullOrWhiteSpace(dto.RejectionReason))
                 {
-                    return (false, "Rejection reason must be provided when rejecting an organization.");
+                    return (false, "Cần cung cấp lý do khi từ chối tổ chức!");
                 }
             }
 
             await _organRepo.UpdateAsync(organ);
-            return (true, "Organization status updated successfully!");
+            return (true, "Phê duyệt tổ chức thành công!");
         }
 
         public async Task<List<ViewOrganDto>> GetOrgansByFilter(OrganFilterDto dto)

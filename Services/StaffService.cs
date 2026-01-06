@@ -56,14 +56,14 @@ namespace Together.Services
             {
                 var organization = await _organRepo.GetByIdAsync(dto.OrganizationId);
                 if (organization == null)
-                    return (false, "Organization not found", null);
+                    return (false, "Không tìm thấy tổ chức!", null);
 
                 int accountId;
 
                 var accountResult = await _accountService.CreateAccount(dto.NewAccount, AccountRole.Staff, dto.NewAccount.ProfileImageUrl);
 
                 if (!accountResult.Success)
-                    return (false, $"Failed to create account: {accountResult.Message}", null);
+                    return (false, $"Không thể tạo tài khoản tổ chức: {accountResult.Message}!", null);
 
                 accountId = accountResult.AccountId;
 
@@ -76,11 +76,11 @@ namespace Together.Services
 
                 await _staffRepo.AddAsync(staff);
 
-                return (true, "Staff created successfully", staff.Id);
+                return (true, "Tạo tài khoản tổ chức thành công!", staff.Id);
             }
             catch (Exception ex)
             {
-                return (false, $"Error creating staff: {ex.Message}", null);
+                return (false, $"Không thể tạo tài khoản tổ chức: {ex.Message}!", null);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Together.Services
         {
             var staff = await _staffRepo.GetByIdAsync(staffId);
             if (staff == null)
-                return (false, "Staff not found");
+                return (false, "Không tìm thấy nhân viên!");
 
             if (dto.Role.HasValue)
                 staff.Role = dto.Role.Value;
@@ -121,7 +121,7 @@ namespace Together.Services
                             a.Email == dto.Email && a.Id != staff.Account.Id);
 
                         if (emailExists)
-                            return (false, "Email already in use by another account");
+                            return (false, "Email đã được sử dụng ở tài khoản khác!");
 
                         staff.Account.Email = dto.Email;
                     }
@@ -143,23 +143,44 @@ namespace Together.Services
             }
 
             await _staffRepo.UpdateAsync(staff);
-            return (true, "Staff updated successfully");
+            return (true, "Cập nhật tài khoản tổ chức thành công!");
         }
 
         public async Task<(bool Success, string Message)> DeleteStaff(int staffId)
         {
             var staff = await _staffRepo.GetByIdAsync(staffId);
             if (staff == null)
-                return (false, "Staff not found");
+                return (false, "Không tìm thấy nhân viên");
 
             await _staffRepo.DeleteAsync(staff);
-            return (true, "Staff deleted successfully");
+            return (true, "Xóa nhân viên thành công!");
         }
 
         public async Task<List<ViewStaffDto>> GetStaffByFilterAsync(StaffFilterDto dto)
         {
             var staffs = await _staffRepo.GetByFilterAsync(dto);
             return staffs.Select(MapToViewStaffDto).ToList();
+        }
+
+        public async Task<(bool Success, string Message)> ChangeStatus(int staffId)
+        {
+            var staff = await _staffRepo.GetByIdAsync(staffId);
+            if (staff == null)
+                return (false, "Không tìm thấy nhân viên!");
+
+            staff.IsActive = !staff.IsActive;
+
+            if (!staff.IsActive)
+            {
+                staff.LeftAt = DateTime.UtcNow;
+            }
+            else if (staff.IsActive && staff.LeftAt.HasValue)
+            {
+                staff.LeftAt = null;
+            }
+
+            await _staffRepo.UpdateAsync(staff);
+            return (true, "Cập nhật trạng thái thành công!");
         }
 
         private ViewStaffDto MapToViewStaffDto(Staff staff)

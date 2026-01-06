@@ -15,7 +15,7 @@ namespace Together.Services
         private readonly CertificateRepo _certificateRepo;
         private readonly CalculateScore _calculateScore;
 
-        public ProjectService(ProjectRepo projectRepo, CategoryRepo categoryRepo, OrganizationRepo organRepo, 
+        public ProjectService(ProjectRepo projectRepo, CategoryRepo categoryRepo, OrganizationRepo organRepo,
             CloudinaryService imageStorageService, CertificateRepo certificateRepo, CalculateScore calculateScore)
         {
             _projectRepo = projectRepo;
@@ -44,15 +44,18 @@ namespace Together.Services
             try
             {
                 var organization = await _organRepo.GetByIdAsync(dto.OrganizationId);
-                if (organization == null || !organization.Status.Equals(OrganzationStatus.Active))
-                    return (false, "Organization not found or inactive.", null);
+                if (organization == null)
+                    return (false, "Không tìm thấy tổ chức!", null);
+
+                if (!organization.Status.Equals(OrganzationStatus.Active))
+                    return (false, "Tổ chức đã dừng hoạt động!", null);
 
                 if (dto.CategoryIds == null || !dto.CategoryIds.Any())
-                    return (false, "At least one category is required.", null);
+                    return (false, "Cần thêm ít nhất được phân loại!", null);
 
                 var categoriesExist = await _categoryRepo.CategoriesExistAsync(dto.CategoryIds);
                 if (!categoriesExist)
-                    return (false, "One or more categories do not exist or are inactive.", null);
+                    return (false, "Cần thêm ít nhất được phân loại!", null);
 
                 var project = new Project
                 {
@@ -73,7 +76,7 @@ namespace Together.Services
                     Status = ProjectStatus.Planning,
                     CurrentVolunteers = 0,
                     CreatedAt = DateTime.UtcNow
-                }; 
+                };
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
@@ -90,7 +93,7 @@ namespace Together.Services
                 }
 
                 await _projectRepo.AddAsync(project);
-                return (true, "Project created successfully.", project.Id);
+                return (true, "Tạo chương trình thành công!", project.Id);
             }
             catch (Exception ex)
             {
@@ -104,14 +107,14 @@ namespace Together.Services
             {
                 var project = await _projectRepo.GetByIdAsync(id);
                 if (project == null)
-                    return (false, "Project not found.");
+                    return (false, "Không tìm thấy tổ chức!");
 
                 if (dto.CategoryIds == null || !dto.CategoryIds.Any())
-                    return (false, "At least one category is required.");
+                    return (false, "Cần thêm ít nhất được phân loại!");
 
                 var categoriesExist = await _categoryRepo.CategoriesExistAsync(dto.CategoryIds);
                 if (!categoriesExist)
-                    return (false, "One or more categories do not exist or are inactive.");
+                    return (false, "Cần thêm ít nhất được phân loại!");
 
                 project.Title = dto.Title;
                 project.Description = dto.Description;
@@ -149,7 +152,7 @@ namespace Together.Services
                 project.Status = dto.Status;
 
                 await _projectRepo.UpdateAsync(project);
-                return (true, "Project updated successfully.");
+                return (true, "Cập nhật chương trình thành công!");
             }
             catch (Exception ex)
             {
@@ -163,14 +166,14 @@ namespace Together.Services
             {
                 var project = await _projectRepo.GetByIdAsync(projectId);
                 if (project == null)
-                    return (false, "Project not found.");
+                    return (false, "Không tìm thấy tổ chức!");
 
-                var category = await _categoryRepo.GetByIdAsync(categoryId); 
+                var category = await _categoryRepo.GetByIdAsync(categoryId);
                 if (category == null || !category.IsActive)
-                    return (false, "Category not found or inactive.");
+                    return (false, "Cần thêm ít nhất được phân loại!");
 
                 if (project.Categories.Any(pc => pc.CategoryId == categoryId))
-                    return (false, "Category already added to project.");
+                    return (false, "Cần thêm ít nhất được phân loại!");
 
                 project.Categories.Add(new ProjectCategory
                 {
@@ -179,7 +182,7 @@ namespace Together.Services
                 });
 
                 await _projectRepo.UpdateAsync(project);
-                return (true, "Category added to project successfully.");
+                return (true, "Cập nhật chương trình thành công!");
             }
             catch (Exception ex)
             {
@@ -197,22 +200,22 @@ namespace Together.Services
         {
             var project = await _projectRepo.GetByIdAsync(projectId);
             if (project == null)
-                return (false, "Project not found.");
+                return (false, "Không tìm thấy tổ chức!");
 
             var projectCategory = project.Categories.FirstOrDefault(pc => pc.CategoryId == categoryId);
             if (projectCategory == null)
-                return (false, "Category not found in project.");
+                return (false, "Cần thêm ít nhất được phân loại!");
 
             project.Categories.Remove(projectCategory);
             await _projectRepo.UpdateAsync(project);
-            return (true, "Category removed from project successfully.");
+            return (true, "Cập nhật chương trình thành công!");
         }
 
         public async Task<(bool Success, string Message)> DeleteProject(int id)
         {
             var project = await _projectRepo.GetByIdAsync(id);
             if (project == null)
-                return (false, "Project does not exist!");
+                return (false, "Không tìm thấy tổ chức!");
 
             if (!string.IsNullOrEmpty(project.ImageUrl))
             {
@@ -220,7 +223,7 @@ namespace Together.Services
             }
 
             await _projectRepo.DeleteAsync(project);
-            return (true, "Project deleted successfully.");
+            return (true, "Xóa chương trình thành công!");
         }
 
         public async Task<List<ViewMatchedProjectDto>> GetMatchedProject(int accountId, string? location)
@@ -228,7 +231,7 @@ namespace Together.Services
             var certificates = await _certificateRepo.GetByAccountIdAsync(accountId);
 
             if (!certificates.Any())
-                return new List<ViewMatchedProjectDto>(); 
+                return new List<ViewMatchedProjectDto>();
 
             var certificateCategoryIds = certificates
                 .Select(c => c.CategoryId)
@@ -237,8 +240,8 @@ namespace Together.Services
 
             var filter = new ProjectFilterDto
             {
-                Status = ProjectStatus.Recruiting, 
-                CategoryIds = certificateCategoryIds 
+                Status = ProjectStatus.Recruiting,
+                CategoryIds = certificateCategoryIds
             };
 
             if (!string.IsNullOrEmpty(location))
@@ -255,8 +258,8 @@ namespace Together.Services
                     MatchScore = _calculateScore.CalculateMatchScore(project, certificates, certificateCategoryIds),
                     MatchingCategories = _calculateScore.GetMatchingCategories(project, certificateCategoryIds)
                 })
-                .Where(result => result.MatchScore > 0) 
-                .OrderByDescending(result => result.MatchScore) 
+                .Where(result => result.MatchScore > 0)
+                .OrderByDescending(result => result.MatchScore)
                 .ToList();
 
             var result = matchedProjects.Select(mp => new ViewMatchedProjectDto
@@ -265,7 +268,7 @@ namespace Together.Services
                 Title = mp.Project.Title,
                 Description = mp.Project.Description,
                 Type = mp.Project.Type,
-                TypeName = mp.Project.Type.ToFriendlyName(), 
+                TypeName = mp.Project.Type.ToFriendlyName(),
                 StartDate = mp.Project.StartDate,
                 EndDate = mp.Project.EndDate,
                 Location = mp.Project.Location,
@@ -273,7 +276,7 @@ namespace Together.Services
                 OrganizationId = mp.Project.OrganizationId,
                 OrganizationName = mp.Project.Organization?.Name,
                 Status = mp.Project.Status,
-                StatusName = mp.Project.Status.ToFriendlyName(), 
+                StatusName = mp.Project.Status.ToFriendlyName(),
                 RequiredVolunteers = mp.Project.RequiredVolunteers,
                 CurrentVolunteers = mp.Project.CurrentVolunteers,
                 CreatedAt = mp.Project.CreatedAt,
