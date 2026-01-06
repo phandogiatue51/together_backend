@@ -138,6 +138,7 @@ namespace Together.Services
             existing.Email = dto.Email;
             existing.PhoneNumber = dto.PhoneNumber;
             existing.Address = dto.Address;
+            existing.Type = dto.Type;
 
             if (newImageFile != null && newImageFile.Length > 0)
             {
