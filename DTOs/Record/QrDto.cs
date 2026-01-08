@@ -17,15 +17,16 @@ namespace Together.DTOs.Record
             [Required]
             public int ProjectId { get; set; }
 
-            public int? DurationHours { get; set; } = 24;
+            public int? DurationHours { get; set; } = 2;
         }
 
         public class QrResponseDto
         {
-            public string QrToken { get; set; } = string.Empty;
-            public string QrImageBase64 { get; set; } = string.Empty;
+            public string QrToken { get; set; }
+            public string QrImageBase64 { get; set; }
             public DateTime ExpiresAt { get; set; }
-            public string ProjectName { get; set; } = string.Empty;
+            public string ProjectName { get; set; }
+            public string ActionType { get; set; } 
         }
     }
 }

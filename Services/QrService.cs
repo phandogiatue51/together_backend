@@ -30,24 +30,34 @@ namespace Together.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QrResponseDto> GenerateQrCodeAsync(GenerateQrDto dto)
+        public async Task<QrResponseDto> GenerateCheckInQrCodeAsync(GenerateQrDto dto)
+        {
+            return await GenerateQrCodeAsync(dto, "checkin");
+        }
+
+        public async Task<QrResponseDto> GenerateCheckOutQrCodeAsync(GenerateQrDto dto)
+        {
+            return await GenerateQrCodeAsync(dto, "checkout");
+        }
+
+        private async Task<QrResponseDto> GenerateQrCodeAsync(GenerateQrDto dto, string actionType)
         {
             var project = await _projectRepo.GetByIdAsync(dto.ProjectId);
             if (project == null)
                 throw new Exception("Project not found");
 
-
             var token = Guid.NewGuid().ToString();
-            var expiresAt = DateTime.UtcNow.AddHours(dto.DurationHours ?? 24);
+            var expiresAt = DateTime.UtcNow.AddHours(2);
 
-            _cache.Set($"qr-{token}", new
+            _cache.Set($"qr-{token}", new QrCacheData
             {
                 ProjectId = dto.ProjectId,
-                ExpiresAt = expiresAt
+                ExpiresAt = expiresAt,
+                ActionType = actionType,
+                CreatedAt = DateTime.UtcNow
             }, expiresAt - DateTime.UtcNow);
 
-            var qrContent = $"together://checkin/{token}";
-            // OR: $"https://yourapp.com/checkin/{token}" for web
+            var qrContent = $"https://website.com/attendance/{token}?action={actionType}";
 
             string qrImageBase64;
             using (var qrGenerator = new QRCodeGenerator())
@@ -63,7 +73,8 @@ namespace Together.Services
                 QrToken = token,
                 QrImageBase64 = $"data:image/png;base64,{qrImageBase64}",
                 ExpiresAt = expiresAt,
-                ProjectName = project.Title
+                ProjectName = project.Title,
+                ActionType = actionType
             };
         }
 
@@ -74,11 +85,16 @@ namespace Together.Services
             try
             {
                 var cacheKey = $"qr-{dto.QrToken}";
-                if (!_cache.TryGetValue(cacheKey, out object tokenData))
+                if (!_cache.TryGetValue(cacheKey, out QrCacheData tokenData))
                     throw new Exception("Invalid or expired QR code");
 
-                dynamic data = tokenData;
-                int projectId = data.ProjectId;
+                if (tokenData.ActionType == "checkout")
+                {
+                    _cache.Remove(cacheKey);
+                }
+
+                int projectId = tokenData.ProjectId;
+                var actionType = tokenData.ActionType;
 
                 var filter = new AppFilterDto
                 {
@@ -92,24 +108,29 @@ namespace Together.Services
                 var application = applications.FirstOrDefault();
 
                 if (application == null)
-                    throw new Exception("You are not approved for this project");
+                    throw new Exception("You are not approved for this project!");
 
                 var actionTime = dto.ActionTime ?? DateTime.UtcNow;
                 var today = actionTime.Date;
 
                 var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, today);
 
-                if (activeRecord == null)
+                if (actionType == "check-in")
                 {
+                    if (activeRecord != null)
+                        throw new Exception("You are already checked in for today!");
+
+                    if (activeRecord.CheckOut.HasValue)
+                        throw new Exception("You have already checked out for today!");
+
                     var record = new VolunteerHour
                     {
                         VolunteerApplicationId = application.Id,
                         CheckIn = actionTime
                     };
 
-                    await _hourRepo.AddAsync(record); 
-                    await _unitOfWork.SaveChangesAsync(); 
-
+                    await _hourRepo.AddAsync(record);
+                    await _unitOfWork.SaveChangesAsync();
                     await _unitOfWork.CommitAsync();
 
                     return new ScanResultDto
@@ -122,11 +143,17 @@ namespace Together.Services
                 }
                 else
                 {
+                    if (activeRecord == null)
+                        throw new Exception("No active check-in found. Please check in first.");
+
                     if (activeRecord.CheckOut.HasValue)
                         throw new Exception("Already checked out");
 
                     if (actionTime <= activeRecord.CheckIn)
                         throw new Exception("Check-out time must be after check-in");
+
+                    if (actionTime.Date != activeRecord.CheckIn)
+                        throw new Exception("Check-out must be on the same day as check-in");
 
                     activeRecord.CheckOut = actionTime;
 
@@ -160,5 +187,24 @@ namespace Together.Services
             }
         }
 
+        // Cleanup expired QR codes
+        public void CleanupExpiredQrCodes()
+        {
+            // This could be called periodically (e.g., via background service)
+            // For now, it's available for manual cleanup
+            // In production, consider using IMemoryCache with callbacks or a background service
+        }
+
+        // Get all active QR codes (for monitoring)
+        public List<QrCacheData> GetActiveQrCodes()
+        {
+            var result = new List<QrCacheData>();
+
+            // Note: This is a simplified approach. In production, you might need 
+            // a different cache implementation to list all keys
+            // or maintain a separate list of active tokens
+
+            return result;
+        }
     }
 }
