@@ -115,7 +115,7 @@ namespace Together.Services
 
                 var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, today);
 
-                if (actionType == "check-in")
+                if (actionType == "checkin")
                 {
                     if (activeRecord != null)
                         throw new Exception("You are already checked in for today!");
@@ -135,7 +135,7 @@ namespace Together.Services
 
                     return new ScanResultDto
                     {
-                        Action = "check-in",
+                        Action = "checkin",
                         Message = $"Checked in to {application.Project.Title}",
                         Time = actionTime,
                         RecordId = record.RecordId
@@ -171,7 +171,7 @@ namespace Together.Services
 
                     return new ScanResultDto
                     {
-                        Action = "check-out",
+                        Action = "checkout",
                         Message = $"Checked out from {application.Project.Title}",
                         HoursWorked = activeRecord.Hours,
                         TotalHours = account.Hour,
