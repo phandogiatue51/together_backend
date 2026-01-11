@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.Record;
 using Together.Services;
 
 namespace Together.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class HourController : ControllerBase

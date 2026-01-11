@@ -8,7 +8,6 @@ using Together.Services;
 namespace Together.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     public class BlogController : ControllerBase
     {
@@ -34,6 +33,7 @@ namespace Together.Controllers
             return blog;
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
         public async Task<ActionResult> CreateBlog([FromForm] CreateBlogDto dto)
         {
@@ -44,6 +44,7 @@ namespace Together.Controllers
             return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBlog(int id, [FromForm] UpdateBlogDto dto)
         {
@@ -54,6 +55,7 @@ namespace Together.Controllers
             return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBlog(int id)
         {
@@ -64,6 +66,7 @@ namespace Together.Controllers
             return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [HttpPut("{id}/status")]
         public async Task<ActionResult> ChangeBlogStatus(int id, BlogStatus status)
         {

@@ -7,7 +7,6 @@ using Together.Services;
 namespace Together.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     public class CategoryController : ControllerBase
     {

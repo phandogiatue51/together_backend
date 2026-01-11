@@ -83,6 +83,7 @@ namespace Together.Controllers
             return Ok(new { result.Message });
         }
 
+        [Authorize(Roles = "Volunteer")]
         [HttpPut("change-password/{id}")]
         public async Task<ActionResult> ChangePassword(int id, ChangePasswordDto dto)
         {
@@ -113,6 +114,7 @@ namespace Together.Controllers
             return result;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("change-status")]
         public async Task<ActionResult> ChangeStatus(int id)
         {

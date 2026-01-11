@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Together.DTOs.App;
 using Together.DTOs.Certi;
@@ -10,6 +11,7 @@ namespace Together.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CertificateController : ControllerBase
     {
         private readonly CertificateService _certificateService;
