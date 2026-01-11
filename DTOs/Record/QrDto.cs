@@ -12,14 +12,6 @@ namespace Together.DTOs.Record
             public DateTime? ActionTime { get; set; }
         }
 
-        public class GenerateQrDto
-        {
-            [Required]
-            public int ProjectId { get; set; }
-
-            public int? DurationHours { get; set; } = 2;
-        }
-
         public class QrResponseDto
         {
             public string QrToken { get; set; }

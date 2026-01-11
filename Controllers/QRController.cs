@@ -19,11 +19,11 @@ namespace Together.Controllers
         }
 
         [HttpPost("generate-checkin")]
-        public async Task<IActionResult> GenerateCheckInQr([FromBody] GenerateQrDto dto)
+        public async Task<IActionResult> GenerateCheckInQr(int projectId)
         {
             try
             {
-                var result = await _qrService.GenerateCheckInQrCodeAsync(dto);
+                var result = await _qrService.GenerateCheckInQrCodeAsync(projectId);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -34,11 +34,11 @@ namespace Together.Controllers
         }
 
         [HttpPost("generate-checkout")]
-        public async Task<IActionResult> GenerateCheckOutQr([FromBody] GenerateQrDto dto)
+        public async Task<IActionResult> GenerateCheckOutQr(int projectId)
         {
             try
             {
-                var result = await _qrService.GenerateCheckOutQrCodeAsync(dto);
+                var result = await _qrService.GenerateCheckOutQrCodeAsync(projectId);
                 return Ok(result);
             }
             catch (Exception ex)

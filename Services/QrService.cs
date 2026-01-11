@@ -30,19 +30,19 @@ namespace Together.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<QrResponseDto> GenerateCheckInQrCodeAsync(GenerateQrDto dto)
+        public async Task<QrResponseDto> GenerateCheckInQrCodeAsync(int projectId)
         {
-            return await GenerateQrCodeAsync(dto, "checkin");
+            return await GenerateQrCodeAsync(projectId, "checkin");
         }
 
-        public async Task<QrResponseDto> GenerateCheckOutQrCodeAsync(GenerateQrDto dto)
+        public async Task<QrResponseDto> GenerateCheckOutQrCodeAsync(int projectId)
         {
-            return await GenerateQrCodeAsync(dto, "checkout");
+            return await GenerateQrCodeAsync(projectId, "checkout");
         }
 
-        private async Task<QrResponseDto> GenerateQrCodeAsync(GenerateQrDto dto, string actionType)
+        private async Task<QrResponseDto> GenerateQrCodeAsync(int projectId, string actionType)
         {
-            var project = await _projectRepo.GetByIdAsync(dto.ProjectId);
+            var project = await _projectRepo.GetByIdAsync(projectId);
             if (project == null)
                 throw new Exception("Project not found");
 
@@ -51,7 +51,7 @@ namespace Together.Services
 
             _cache.Set($"qr-{token}", new QrCacheData
             {
-                ProjectId = dto.ProjectId,
+                ProjectId = projectId,
                 ExpiresAt = expiresAt,
                 ActionType = actionType,
                 CreatedAt = DateTime.UtcNow
