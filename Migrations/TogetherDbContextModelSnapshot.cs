@@ -84,7 +84,7 @@ namespace Together.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.BlogPost", b =>
@@ -160,7 +160,7 @@ namespace Together.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("BlogPosts");
+                    b.ToTable("BlogPosts", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.Category", b =>
@@ -203,7 +203,7 @@ namespace Together.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.Certificate", b =>
@@ -256,7 +256,7 @@ namespace Together.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Certificates");
+                    b.ToTable("Certificates", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.Organization", b =>
@@ -313,7 +313,7 @@ namespace Together.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.Project", b =>
@@ -403,7 +403,7 @@ namespace Together.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.ProjectCategory", b =>
@@ -427,7 +427,7 @@ namespace Together.Migrations
                     b.HasIndex("ProjectId", "CategoryId")
                         .IsUnique();
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("ProjectCategories", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.Staff", b =>
@@ -465,7 +465,7 @@ namespace Together.Migrations
                     b.HasIndex("OrganizationId", "AccountId")
                         .IsUnique();
 
-                    b.ToTable("Staff");
+                    b.ToTable("Staff", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.VolunteerApplication", b =>
@@ -525,7 +525,7 @@ namespace Together.Migrations
                     b.HasIndex("ProjectId", "VolunteerId")
                         .IsUnique();
 
-                    b.ToTable("VolunteerApplications");
+                    b.ToTable("VolunteerApplications", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.VolunteerHour", b =>
@@ -562,7 +562,7 @@ namespace Together.Migrations
 
                     b.HasIndex("VolunteerApplicationId");
 
-                    b.ToTable("VolunteerHours");
+                    b.ToTable("VolunteerHours", (string)null);
                 });
 
             modelBuilder.Entity("Together.Models.BlogPost", b =>

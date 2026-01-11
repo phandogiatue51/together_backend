@@ -10,5 +10,7 @@
         public decimal? TotalHours { get; set; }
         public DateTime? CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
+        public int ProjectId { get; set; }
+        public string ProjectName { get; set; }
     }
 }

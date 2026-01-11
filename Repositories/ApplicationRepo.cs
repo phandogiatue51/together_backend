@@ -15,7 +15,8 @@ public class ApplicationRepo : BaseRepo<VolunteerApplication>
             .Include(a => a.Volunteer)
             .Include(a => a.SelectedCertificate)  
                 .ThenInclude(c => c.Category)      
-            .Include(a => a.ReviewedByStaff);
+            .Include(a => a.ReviewedByStaff)
+            .Include(a => a.VolunteerHours); 
     }
 
     public async Task<List<VolunteerApplication>> GetAllAsync()

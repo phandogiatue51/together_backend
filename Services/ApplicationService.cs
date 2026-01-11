@@ -165,6 +165,11 @@ namespace Together.Services
                 ReviewedByStaffId = a.ReviewedByStaffId,
                 RejectionReason = a.RejectionReason,
                 Feedback = a.Feedback,
+                VolunteerHours = a.VolunteerHours.Select(vh => new VolunteerHourDto { 
+                    CheckIn = vh.CheckIn, 
+                    CheckOut = vh.CheckOut, 
+                    Hours = vh.Hours 
+                }).ToList(),
                 SelectedCertificate = a.SelectedCertificate != null ? new ViewCertiDto
                 {
                     Id = a.SelectedCertificate.Id,

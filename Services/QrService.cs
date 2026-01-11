@@ -138,7 +138,9 @@ namespace Together.Services
                         Action = "checkin",
                         Message = $"Checked in to {application.Project.Title}",
                         Time = actionTime,
-                        RecordId = record.RecordId
+                        RecordId = record.RecordId,
+                        ProjectId = projectId,
+                        ProjectName = application.Project.Title 
                     };
                 }
                 else
@@ -176,7 +178,9 @@ namespace Together.Services
                         HoursWorked = activeRecord.Hours,
                         TotalHours = account.Hour,
                         CheckInTime = activeRecord.CheckIn,
-                        CheckOutTime = activeRecord.CheckOut
+                        CheckOutTime = activeRecord.CheckOut,
+                        ProjectId = projectId, 
+                        ProjectName = application.Project.Title 
                     };
                 }
             }
@@ -195,7 +199,6 @@ namespace Together.Services
             // In production, consider using IMemoryCache with callbacks or a background service
         }
 
-        // Get all active QR codes (for monitoring)
         public List<QrCacheData> GetActiveQrCodes()
         {
             var result = new List<QrCacheData>();

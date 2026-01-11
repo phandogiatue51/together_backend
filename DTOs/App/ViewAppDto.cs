@@ -14,7 +14,7 @@ namespace Together.DTOs.App
         public string? OrganizationName { get; set; }
         public int VolunteerId { get; set; }
         public string? VolunteerName { get; set; }
-        public ApplicationStatus Status { get; set; } 
+        public ApplicationStatus Status { get; set; }
         public string? StatusName { get; set; }
         public string? RelevantExperience { get; set; }
 
@@ -25,6 +25,13 @@ namespace Together.DTOs.App
         public string? RejectionReason { get; set; }
 
         public string? Feedback { get; set; }
+        public List<VolunteerHourDto> VolunteerHours { get; set; } = new();
         public ViewCertiDto? SelectedCertificate { get; set; }
+    }
+
+    public class VolunteerHourDto { 
+        public DateTime? CheckIn { get; set; } 
+        public DateTime? CheckOut { get; set; } 
+        public decimal Hours { get; set; } 
     }
 }
