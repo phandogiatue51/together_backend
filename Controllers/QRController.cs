@@ -19,7 +19,7 @@ namespace Together.Controllers
         }
 
         [HttpPost("generate-checkin")]
-        public async Task<IActionResult> GenerateCheckInQr(int projectId)
+        public async Task<IActionResult> GenerateCheckInQr([FromQuery] int projectId) 
         {
             try
             {
@@ -34,7 +34,7 @@ namespace Together.Controllers
         }
 
         [HttpPost("generate-checkout")]
-        public async Task<IActionResult> GenerateCheckOutQr(int projectId)
+        public async Task<IActionResult> GenerateCheckOutQr([FromQuery] int projectId) 
         {
             try
             {
