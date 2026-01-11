@@ -57,7 +57,7 @@ namespace Together.Services
                 CreatedAt = DateTime.UtcNow
             }, expiresAt - DateTime.UtcNow);
 
-            var qrContent = $"https://website.com/attendance/{token}?action={actionType}";
+            var qrContent = $"https://exe-201-togethers-projects-06b082f5.vercel.app/attendance/{token}?action={actionType}";
 
             string qrImageBase64;
             using (var qrGenerator = new QRCodeGenerator())
