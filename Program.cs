@@ -81,7 +81,8 @@ builder.Services.AddCors(options =>
             "http://localhost:3000",
             "https://localhost:3000",
             "http://localhost:5173",
-            "https://localhost:5173"
+            "https://localhost:5173",
+            "https://togethers-projects-06b082f5.vercel.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
