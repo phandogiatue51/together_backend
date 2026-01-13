@@ -9,7 +9,9 @@ namespace Together.DTOs.Record
             [Required]
             public string QrToken { get; set; } = string.Empty;
 
-            public DateTime? ActionTime { get; set; }
+            public DateTime? ActionTime { get; set; } = DateTime.Now;
+            [Required]
+            public int AccountId { get; set; }
         }
 
         public class QrResponseDto

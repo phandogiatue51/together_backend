@@ -78,7 +78,7 @@ namespace Together.Services
             };
         }
 
-        public async Task<ScanResultDto> ProcessQrScanAsync(QrActionDto dto, int volunteerId)
+        public async Task<ScanResultDto> ProcessQrScanAsync(QrActionDto dto)
         {
             await _unitOfWork.BeginTransactionAsync();
 
@@ -97,7 +97,7 @@ namespace Together.Services
                 {
                     ProjectId = projectId,
                     Status = null,
-                    VolunteerId = volunteerId,
+                    VolunteerId = dto.AccountId,
                     OrganizationId = null
                 };
 
@@ -107,10 +107,9 @@ namespace Together.Services
                 if (application == null)
                     throw new Exception("You are not approved for this project!");
 
-                var actionTime = dto.ActionTime ?? DateTime.UtcNow;
-                var today = actionTime.Date;
+                var today = dto.ActionTime;
 
-                var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, today);
+                var activeRecord = await _hourRepo.GetActiveRecordAsync(application.Id, (DateTime)today);
 
                 if (actionType == "checkin")
                 {
@@ -123,7 +122,7 @@ namespace Together.Services
                     var record = new VolunteerHour
                     {
                         VolunteerApplicationId = application.Id,
-                        CheckIn = actionTime
+                        CheckIn = dto.ActionTime
                     };
 
                     await _hourRepo.AddAsync(record);
@@ -134,7 +133,7 @@ namespace Together.Services
                     {
                         Action = "checkin",
                         Message = $"Checked in to {application.Project.Title}",
-                        Time = actionTime,
+                        Time = dto.ActionTime,
                         RecordId = record.RecordId,
                         ProjectId = projectId,
                         ProjectName = application.Project.Title 
@@ -148,20 +147,20 @@ namespace Together.Services
                     if (activeRecord.CheckOut.HasValue)
                         throw new Exception("Already checked out");
 
-                    if (actionTime <= activeRecord.CheckIn)
+                    if (dto.ActionTime <= activeRecord.CheckIn)
                         throw new Exception("Check-out time must be after check-in");
 
-                    if (actionTime.Date != activeRecord.CheckIn)
+                    if (dto.ActionTime != activeRecord.CheckIn)
                         throw new Exception("Check-out must be on the same day as check-in");
 
-                    activeRecord.CheckOut = actionTime;
+                    activeRecord.CheckOut = dto.ActionTime;
 
                     var timeSpan = activeRecord.CheckOut.Value - activeRecord.CheckIn.Value;
                     activeRecord.Hours = (decimal)timeSpan.TotalHours;
 
                     await _hourRepo.UpdateAsync(activeRecord);
 
-                    var account = await _accountRepo.GetByIdAsync(volunteerId);
+                    var account = await _accountRepo.GetByIdAsync(dto.AccountId);
                     account.Hour += activeRecord.Hours;
                     await _accountRepo.UpdateAsync(account);
 

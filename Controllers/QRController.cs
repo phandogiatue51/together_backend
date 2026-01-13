@@ -49,13 +49,11 @@ namespace Together.Controllers
         }
 
         [HttpPost("scan")]
-        public async Task<IActionResult> ScanQr([FromBody] QrActionDto dto)
+        public async Task<IActionResult> ScanQr([FromForm] QrActionDto dto)
         {
             try
             {
-                var volunteerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-                var result = await _qrService.ProcessQrScanAsync(dto, volunteerId);
+                var result = await _qrService.ProcessQrScanAsync(dto);
 
                 return Ok(new
                 {
