@@ -88,10 +88,7 @@ namespace Together.Services
                 if (!_cache.TryGetValue(cacheKey, out QrCacheData tokenData))
                     throw new Exception("Invalid or expired QR code");
 
-                if (tokenData.ActionType == "checkout")
-                {
-                    _cache.Remove(cacheKey);
-                }
+                _cache.Remove(cacheKey); 
 
                 int projectId = tokenData.ProjectId;
                 var actionType = tokenData.ActionType;
