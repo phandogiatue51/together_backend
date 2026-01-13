@@ -31,15 +31,23 @@ namespace Together.Services
             return hours.Select(MapToViewRecordDto).ToList();
         }
 
-        public ViewRecordDto MapToViewRecordDto(VolunteerHour hour)
+        public ViewRecordDto MapToViewRecordDto(VolunteerHour entity)
         {
             return new ViewRecordDto
             {
-                RecordId = hour.RecordId,
-                VolunteerApplicationId = hour.VolunteerApplicationId,
-                CheckIn = hour.CheckIn,
-                CheckOut = hour.CheckOut,
-                Hours = hour.Hours,
+                RecordId = entity.RecordId,
+                VolunteerApplicationId = entity.VolunteerApplicationId,
+                CheckIn = entity.CheckIn,
+                CheckOut = entity.CheckOut,
+                Hours = entity.Hours,
+                Volunteer = entity.VolunteerApplication?.Volunteer == null ? null : new VolunteerDto
+                {
+                    Id = entity.VolunteerApplication.Volunteer.Id,
+                    Name = entity.VolunteerApplication.Volunteer.Name,
+                    ProfileImageUrl = entity.VolunteerApplication.Volunteer.ProfileImageUrl,
+                    Email = entity.VolunteerApplication.Volunteer.Email,
+                    PhoneNumber = entity.VolunteerApplication.Volunteer.PhoneNumber
+                }
             };
         }
     }

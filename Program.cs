@@ -117,10 +117,9 @@ builder.Services.AddScoped<PasswordHelper>();
 builder.Services.AddScoped<CalculateScore>();
 builder.Services.AddScoped<HourRepo>();
 builder.Services.AddScoped<HourService>();
-builder.Services.AddScoped<QrService>();
+builder.Services.AddScoped<AttendanceService>();
 
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped<QrService>();
 builder.Services.AddScoped<UnitOfWork>();
 
 var app = builder.Build();
