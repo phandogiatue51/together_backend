@@ -21,6 +21,10 @@ namespace Together.Models
         public DbSet<VolunteerApplication> VolunteerApplications { get; set; }
         public DbSet<VolunteerHour> VolunteerHours { get; set; }
 
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMember> ChatMembers { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -111,7 +115,7 @@ namespace Together.Models
 
             modelBuilder.Entity<VolunteerHour>()
                  .HasOne(vh => vh.VolunteerApplication)
-                 .WithMany(va => va.VolunteerHours)   
+                 .WithMany(va => va.VolunteerHours)
                  .HasForeignKey(vh => vh.VolunteerApplicationId)
                  .OnDelete(DeleteBehavior.Cascade);
 
@@ -120,6 +124,30 @@ namespace Together.Models
                 .WithMany(va => va.VolunteerHours)
                 .HasForeignKey(vh => vh.VolunteerApplicationId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ChatMember>()
+                .HasOne(cm => cm.Account)
+                .WithMany(a => a.ChatMemberships)
+                .HasForeignKey(cm => cm.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ChatMember>()
+                .HasOne(cm => cm.Chat)
+                .WithMany(c => c.Members)
+                .HasForeignKey(cm => cm.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Chat)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

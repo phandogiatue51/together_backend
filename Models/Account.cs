@@ -59,5 +59,7 @@ namespace Together.Models
         public virtual ICollection<VolunteerApplication> VolunteerApplications { get; set; } = new List<VolunteerApplication>();
         public virtual ICollection<VolunteerHour> VolunteerHours { get; set; } = new List<VolunteerHour>();
         public virtual ICollection<Staff> OrganizationStaff { get; set; } = new List<Staff>();
+        public virtual ICollection<ChatMember> ChatMemberships { get; set; } = new List<ChatMember>();
+
     }
 }
